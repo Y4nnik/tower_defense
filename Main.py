@@ -12,7 +12,8 @@ Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
 
 livingEnemys = [] #darin werden lebende Gegner gesichert
 spawncounter = 0 #zählt tics seit letztem spawn
-
+def draw():
+    a = 0 #dummy Funktion für mehr Übersicht
 class Player:
     def __init__(self, Health):
         self.Health = Health
@@ -71,7 +72,6 @@ class Enemy:
 
         if self.figur.colliderect(Finish):
           livingEnemys.remove(self)
-          print(len(livingEnemys))#Kontrolle
 
 class Tower:
     def spwan():
@@ -81,7 +81,6 @@ class Tower:
          pygame.draw.rect(screen, (100,160,100), tower_rohr_rect, 0)    
                
 
-Enemy1 = Enemy(6, 30, 30,10, 1)
 while Go:
     if spawncounter == 20:
          Enemy1 = Enemy(6, 30, 30,10, 1)
@@ -97,6 +96,7 @@ while Go:
     for Enemys in livingEnemys:
          Enemys.Move()
          Enemys.DrawEnemy()
+    draw()
 
     pygame.display.update()
     spawncounter +=1
