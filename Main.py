@@ -29,30 +29,30 @@ class Gegner:
     def Laufen(self):
      if self.x==676 and self.y <= 227:
                 self.y += self.geschw
-                if self.y>227:
-                    self.y=227
-                    self.x=675
+                if self.y > 227:
+                    self.y = 227
+                    self.x = 675
      elif self.y==227 and self.x<=675 and self.x >= 405:
           self.x -= self.geschw
-          if self.x<405:
-               self.x=405
-               self.y=226
+          if self.x < 405:
+               self.x = 405
+               self.y = 226
      elif self.x==405 and self.y<=226:
           self.y -= self.geschw
           if self.y <= 107:
-               self.y=107
-               self.x=404
-     elif self.y==107 and self.x<=404:
+               self.y = 107
+               self.x = 404
+     elif self.y == 107 and self.x <= 404:
           self.x -= self.geschw
           if self.x <= 188:
-               self.x=188
-               self.y=108
-     elif self.x==188 and self.y >= 107:
+               self.x = 188
+               self.y = 108
+     elif self.x == 188 and self.y >= 107:
           self.y += self.geschw
           if self.y >= 492:
-               self.y=492
-               self.x=189
-     elif self.y==492:
+               self.y = 492
+               self.x = 189
+     elif self.y == 492:
           self.x += self.geschw
           if self.x >= 968:
                self.x = 968
@@ -64,8 +64,8 @@ class Gegner:
                self.x = 969
      elif self.y == 204:
           self.x += self.geschw
-          if self.x >=1288:
-               self.x=1288
+          if self.x >= 1288:
+               self.x = 1288
      if self.figur.colliderect(Ziel):
           livingEnemys.remove(self)
           print(len(livingEnemys))
