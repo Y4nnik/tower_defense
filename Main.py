@@ -49,15 +49,25 @@ class Gegner:
      if self.x==188 and self.y <= 107:
           self.y += self.geschw
 
-         
+class Tower:
+    def spwan():
+         tower_rect = pygame.Rect(500,100,50,50)
+         pygame.draw.rect(screen, (100,50,50), tower_rect, 0)
+         tower_rohr_rect = pygame.Rect(tower_rect.centerx,tower_rect.centery-5,40,10)
+         pygame.draw.rect(screen, (100,160,100), tower_rohr_rect, 0)
+                       
                
 
 Enemy1 = Gegner(10, 30, 30,10)
 print(len(livingEnemys))#Kontrolle, ob in Liste aufgenommen
+
 while Go:
     for event in pygame.event.get():#Tastatur/Spielefenstereingaben abgreifen
-        if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
+        if event.type ==pygame.QUIT: 
+             pygame.quit()
+             sys.exit()#Spiel schließen
     screen.blit(hintergrund, (0,0))
+    Tower.spwan()
     for Enemys in livingEnemys:
          Enemys.Laufen()
          Enemys.EnemyZeichnen()
