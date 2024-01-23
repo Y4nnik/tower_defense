@@ -36,10 +36,10 @@ class Enemy:
         self.figur = pygame.draw.rect(screen, (0,0,0),(676-(self.width/2), 0-(self.height/2), self.width, self.height))   
         
 
-    def EnemyZeichnen(self):
+    def DrawEnemy(self):
         self.figur = pygame.draw.rect(screen, (0,0,0),(self.position[0], self.position[1], self.width, self.height))   
         
-    def Laufen(self):
+    def Move(self):
         self.position += self.vector
         if self.figur.colliderect(self.waypoint1):
             self.vector.rotate_ip(90)
@@ -86,8 +86,8 @@ while Go:
         if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
     screen.blit(background, (0,0))
     for Enemys in livingEnemys:
-         Enemys.Laufen()
-         Enemys.EnemyZeichnen()
+         Enemys.Move()
+         Enemys.DrawEnemy()
 
     pygame.display.update()
     spawncounter +=1
