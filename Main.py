@@ -11,6 +11,7 @@ Go = True #Spielvariable -> solange true lädt game weiter
 Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
 
 livingEnemys = [] #darin werden lebende Gegner gesichert
+livingTowers = [] #darin werden lebende Türme gesichert
 spawncounter = 0 #zählt tics seit letztem spawn
 
 class Player:
@@ -74,16 +75,41 @@ class Enemy:
           print(len(livingEnemys))#Kontrolle
 
 class Tower:
-    def spwan():
-         tower_rect = pygame.Rect(500,100,50,50)
-         pygame.draw.rect(screen, (100,50,50), tower_rect, 0)
-         tower_rohr_rect = pygame.Rect(tower_rect.centerx,tower_rect.centery-5,40,10)
-         pygame.draw.rect(screen, (100,160,100), tower_rohr_rect, 0)    
-               
+    
+    def __init__(self, number_targets, damage, range, fire_rate, price, x_pos, y_pos):
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+        self.tower_rect = pygame.Rect(self.x_pos,self.y_pos,50,50)
+        self.targets_number = 0
+        self.max_targets = number_targets
+        self.target_enemy = Enemy(0,0,0,0,0)
+        self.tower_shoting_range = pygame.Rect(self.x_pos-125,self.y_pos-125,300,300)
+        livingTowers.append(self)  
 
+    def spwan(self):
+         pygame.draw.rect(screen, (100,50,50), self.tower_rect, 0)
+         tower_rohr_rect = pygame.Rect(self.tower_rect.centerx,self.tower_rect.centery-5,40,10)
+         pygame.draw.rect(screen, (100,160,100), tower_rohr_rect, 0)    
+     
+    def detect(self):
+         pygame.draw.rect(screen, (0,0,0), self.tower_shoting_range, 1)
+         for self.enemy in livingEnemys:
+             if self.enemy.figur.colliderect(self.tower_shoting_range) and self.targets_number <= self.max_targets:
+                    self.targets_number += 1
+                    self.target_enemy = self.enemy
+    
+    def shoot(self):
+        if self.target_enemy.figur.colliderect(self.tower_shoting_range):
+            pygame.draw.line(screen, (0,0,0), self.tower_rect.center, self.target_enemy.figur.center, 1)
+        else:
+            self.targets_number -= 1
+            
+            
+               
+         
 Enemy1 = Enemy(6, 30, 30,10, 1)
 while Go:
-    if spawncounter == 20:
+    if spawncounter == 40:
          Enemy1 = Enemy(6, 30, 30,10, 1)
          spawncounter = 0
          
@@ -92,12 +118,19 @@ while Go:
              pygame.quit()
              sys.exit()#Spiel schließen
         if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                  #mausposition anzeigen
+                archer = Tower(1, 2, 300, 5, 100, event.pos[0], event.pos[1])
+                # print(pygame.mouse.get_pos())
     screen.blit(background, (0,0))
-    Tower.spwan()
+    for archer in livingTowers:
+        archer.spwan()
+        archer.detect()
+        archer.shoot()
     for Enemys in livingEnemys:
          Enemys.Move()
          Enemys.DrawEnemy()
-
     pygame.display.update()
     spawncounter +=1
     clock.tick(30)
