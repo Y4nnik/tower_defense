@@ -130,7 +130,6 @@ while True:
                 archer = Tower(1, 2, 300, 5, 100, event.pos[0], event.pos[1])
                 # print(pygame.mouse.get_pos())
     screen.blit(background, (0,0))
-    Tower.spwan()
     for Enemys in livingEnemys:
          Enemys.Move()
          Enemys.DrawEnemy()
