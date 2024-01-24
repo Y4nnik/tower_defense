@@ -2,17 +2,33 @@ import pygame
 import math
 import sys
 
+pygame.font.init() 
+
+killed = 0 #für Herz bei tot von Enemy (Counter)
+
+my_font = pygame.font.SysFont('Comic Sans MS', 30)#definiert Schriftart
 vector = pygame.math.Vector2
+
 background = pygame.image.load("images/background.png")
 pentagon = pygame.image.load("images/fuenfeck.png")
+brokenheart = pygame.image.load("images/damage.png")
+heart = pygame.image.load("images/heart.png")
+
 screen = pygame.display.set_mode([1290, 717])  # Erzeugt Fenster mit Höhe und Breite in Pixeln
 clock = pygame.time.Clock()
 Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
 
 livingEnemys = [] #darin werden lebende Gegner gesichert
 spawncounter = 0 #zählt tics seit letztem spawn
+
 def draw():
-    pass
+    text_surface = my_font.render(str(Player1.health), False, (0, 0, 0))
+    screen.blit(text_surface, (10,5))
+    screen.blit(heart, (70, 10))
+    global killed
+    if killed != 0: 
+        screen.blit(brokenheart, (1252, 185))
+        killed -= 1
 
 livingEnemys = []  # darin werden lebende Gegner gesichert
 livingTowers = []  # darin werden lebende Türme gesichert
@@ -21,14 +37,18 @@ spawncounter = 0  # zählt tics seit letztem spawn
 
 class Player:
     def __init__(self, Health):
-        self.Health = Health
+        self.health = Health
+    def GetDammage(self, damageTaken):
+        self.health -= damageTaken
+        if self.health <= 0: print("Game Over :P")
 
 
 class Enemy:
-    def __init__(self, speed, width, height, health, Schaden):
+    def __init__(self, speed, width, height, health, dammage):
         self.position = (676 - width / 2, 0 - height / 2)
         self.vector = vector(0, speed)
         self.width = width
+        self.dammage=dammage
         self.height = height
         self.health = health
         livingEnemys.append(self)
@@ -42,6 +62,14 @@ class Enemy:
 
         self.figur = pygame.draw.rect(screen, (0, 0, 0),
                                       (676 - (self.width / 2), 0 - (self.height / 2), self.width, self.height))
+
+    def GetDammage(self, damageTaken):
+        self.health -= damageTaken
+        if self.health <= 0: livingEnemys.remove(self)
+        #Funktion für Geld fehlt
+
+    def doDamage(self):
+        Player1.GetDammage(self.dammage)
 
     def DrawEnemy(self):
         self.figur = pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.height))
@@ -78,6 +106,9 @@ class Enemy:
             self.waypoint7 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
 
         if self.figur.colliderect(Finish):
+            global killed
+            killed = 5
+            Player1.GetDammage(self.dammage)
             livingEnemys.remove(self)
 
 
@@ -112,7 +143,7 @@ class Tower:
         else:
             self.targets_number -= 1
 
-
+Player1=Player(100)
 Enemy1 = Enemy(6, 30, 30, 10, 1)
 while True:
     if spawncounter == 20:
