@@ -7,13 +7,12 @@ background = pygame.image.load("images/background.png")
 pentagon = pygame.image.load("images/fuenfeck.png")
 screen = pygame.display.set_mode([1290,717])#Erzeugt Fenster mit Höhe und Breite in Pixeln
 clock = pygame.time.Clock()
-Go = True #Spielvariable -> solange true lädt game weiter
 Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
 
 livingEnemys = [] #darin werden lebende Gegner gesichert
 spawncounter = 0 #zählt tics seit letztem spawn
 def draw():
-    a = 0 #dummy Funktion für mehr Übersicht
+    pass
 class Player:
     def __init__(self, Health):
         self.Health = Health
@@ -81,7 +80,7 @@ class Tower:
          pygame.draw.rect(screen, (100,160,100), tower_rohr_rect, 0)    
                
 
-while Go:
+while True:
     if spawncounter == 20:
          Enemy1 = Enemy(6, 30, 30,10, 1)
          spawncounter = 0
