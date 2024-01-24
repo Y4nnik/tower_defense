@@ -1,18 +1,29 @@
 import pygame
 import math
 import sys
+pygame.font.init() 
 
+
+my_font = pygame.font.SysFont('Comic Sans MS', 30)#definiert Schriftart
+killed = 0 #für Herz bei tot von Enemy (Counter)
 vector = pygame.math.Vector2
+brokenheart = pygame.image.load("images/damage.png")
 hintergrund = pygame.image.load("images/background.png")
 fuenfeck = pygame.image.load("images/fuenfeck.png")
+heart = pygame.image.load("images/heart.png")
 screen = pygame.display.set_mode([1290,717])#Erzeugt Fenster mit Höhe und Breite in Pixeln
 clock = pygame.time.Clock()
 Go = True #Spielvariable -> solange true lädt game weiter
 Ziel=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
+a=100
+
+
 
 livingEnemys = [] #darin werden lebende Gegner gesichert
-spawncounter = 0 #zählt tics seit letztem spawn
-
+spawncounter = 20 #zählt tics seit letztem spawn
+def schaden(damage):
+    global a
+    a = a-damage
 class Gegner:
     def __init__(self, geschw, breite, hoehe, leben, Schaden):
         self.position=(676-breite/2,0-hoehe/2)
@@ -20,6 +31,7 @@ class Gegner:
         self.breite=breite
         self.hoehe=hoehe
         self.leben=leben
+        self.schaden=Schaden
         livingEnemys.append(self)
         self.wegpunkt1 = pygame.draw.rect(screen,(0,0,0),(675, 227+self.breite/2, 1, 1) )
         self.wegpunkt2 = pygame.draw.rect(screen,(0,0,0),(405-self.breite/2, 227, 1, 1) )
@@ -67,12 +79,14 @@ class Gegner:
             self.wegpunkt7 = pygame.draw.rect(screen,(0,0,0),(-10, -10, 1, 1) )
 
         if self.figur.colliderect(Ziel):
+          global killed
+          killed = 5
+          schaden(self.schaden)
           livingEnemys.remove(self)
           print(len(livingEnemys))
          
                
 
-Enemy1 = Gegner(6, 30, 30,10, 1)
 while Go:
     if spawncounter == 20:
          Enemy1 = Gegner(6, 30, 30,10, 1)
@@ -84,7 +98,14 @@ while Go:
     for Enemys in livingEnemys:
          Enemys.Laufen()
          Enemys.EnemyZeichnen()
-
+    
+    text_surface = my_font.render(str(a), False, (0, 0, 0))
+    screen.blit(text_surface, (10,5))
+    screen.blit(heart, (70, 10))
+    
+    if killed != 0: 
+        screen.blit(brokenheart, (1252, 185))
+        killed -= 1
     pygame.display.update()
     spawncounter +=1
     clock.tick(30)
