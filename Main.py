@@ -19,6 +19,7 @@ clock = pygame.time.Clock()
 Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
 
 livingEnemys = [] #darin werden lebende Gegner gesichert
+livingTowers = [] #darin werden lebende Türme gesichert
 spawncounter = 0 #zählt tics seit letztem spawn
 
 def draw():
