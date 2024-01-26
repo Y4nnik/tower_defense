@@ -2,9 +2,11 @@ import pygame
 import math
 import sys
 import newenemy
+from newenemy import Enemy
 
 pygame.font.init() 
-
+wave = 5 #Wellencounter
+Wavelist = []
 killed = 0 #für Herz bei tot von Enemy (Counter)
 
 my_font = pygame.font.SysFont('Comic Sans MS', 30)#definiert Schriftart
@@ -23,17 +25,21 @@ livingEnemys = [] #darin werden lebende Gegner gesichert
 spawncounter = 0 #zählt tics seit letztem spawn
 
 def draw():
-    text_surface = my_font.render(str(Player1.health), False, (0, 0, 0))
-    screen.blit(text_surface, (10,5))
-    screen.blit(heart, (70, 10))
+    wavetext = "Welle: " + str(wave)
+    remainingEnemys = "Verbleibende Gegner: " + str(len(Wavelist)+len(livingEnemys))
+    text_health = my_font.render(str(Player1.health), False, (0, 0, 0))
+    text_remainingenemys = my_font.render(remainingEnemys, False, (0, 0, 0))
+    text_wave = my_font.render(wavetext, False, (0, 0 ,0))
+    screen.blit(text_health, (10,5))
+    screen.blit(text_wave, (160,5))
+    screen.blit(text_remainingenemys, (770, 5))
+    screen.blit(heart, (80, 10))
     global killed
     if killed != 0: 
         screen.blit(brokenheart, (1252, 185))
         killed -= 1
 
-livingEnemys = []  # darin werden lebende Gegner gesichert
 livingTowers = []  # darin werden lebende Türme gesichert
-spawncounter = 0  # zählt tics seit letztem spawn
 
 
 class Player:
@@ -45,14 +51,15 @@ class Player:
 
 
 class Enemy:
-    def __init__(self, speed, width, height, health, dammage):
+    def __init__(self, speed, width, height, health, dammage, value):
         self.position = (676 - width / 2, 0 - height / 2)
         self.vector = vector(0, speed)
         self.width = width
         self.dammage=dammage
         self.height = height
         self.health = health
-        livingEnemys.append(self)
+        self.value = value
+        #livingEnemys.append(self)
         self.waypoint1 = pygame.draw.rect(screen, (0, 0, 0), (675, 227 + self.width / 2, 1, 1))
         self.waypoint2 = pygame.draw.rect(screen, (0, 0, 0), (405 - self.width / 2, 227, 1, 1))
         self.waypoint3 = pygame.draw.rect(screen, (0, 0, 0), (405, 107 - self.height / 2, 1, 1))
@@ -122,7 +129,7 @@ class Tower:
         self.tower_rect = pygame.Rect(self.x_pos, self.y_pos, 50, 50)
         self.targets_number = 0
         self.max_targets = number_targets
-        self.target_enemy = Enemy(0, 0, 0, 0, 0)
+        self.target_enemy = Enemy(0, 0, 0, 0, 0, 0)
         self.tower_shoting_range = pygame.Rect(self.x_pos - 125, self.y_pos - 125, 300, 300)
         livingTowers.append(self)
 
@@ -145,12 +152,24 @@ class Tower:
             self.targets_number -= 1
 
 Player1=Player(100)
-Enemy1 = Enemy(6, 30, 30, 10, 1)
 while True:
     if spawncounter == 20:
-         Enemy1 = Enemy(6, 30, 30,10, 1)
-         spawncounter = 0
-         
+         if len(Wavelist)==0 and len(livingEnemys)==0:
+             wave += 1
+             print("Aktuelle Welle: " + str(wave))
+             savelist = []
+             savelist = newenemy.newWave(wave)
+             for enemys in savelist:
+                 Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value))
+             
+             print("Länge der Welle: " + str(len(Wavelist)))
+         if len(Wavelist)>0:
+            livingEnemys.append(Wavelist[0])
+            print("Lebende Gegner: " + str(len(livingEnemys)))
+            Wavelist.remove(Wavelist[0])
+            
+            spawncounter = 0    
+                      
     for event in pygame.event.get():#Tastatur/Spielefenstereingaben abgreifen
         if event.type ==pygame.QUIT: 
              pygame.quit()
@@ -171,5 +190,8 @@ while True:
         archer.shoot()
     draw()
     pygame.display.update()
-    spawncounter += 1
+    if spawncounter != 20: spawncounter += 1
+    #print("living enemys "+str(len(livingEnemys)))
+    #print("Wavelist "+str(len(Wavelist)))
+    #print("Spawncounter" + str(spawncounter))
     clock.tick(30)
