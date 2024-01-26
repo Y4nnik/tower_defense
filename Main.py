@@ -296,17 +296,20 @@ class Game_funktions:
             
     def placement_funktion(self):
         self.placement_indicator_rect = pygame.Rect(pygame.mouse.get_pos()[0] - 25, pygame.mouse.get_pos()[1] - 25, 50, 50)
+        if self.placement_indicator_rect.colliderect(self.shop):
+            global placement_valid
+            placement_valid = False
+        else:
+            placement_valid = True
         for tower in livingTowers:
             if tower.tower_rect.colliderect(self.placement_indicator_rect):
-                global placement_valid
                 placement_valid = False 
                 break
             else:
-                placement_valid = True
-        if self.placement_indicator_rect.colliderect(self.shop):
-            placement_valid = False
-        else :
-            placement_valid = True
+                if self.placement_indicator_rect.colliderect(self.shop):
+                    placement_valid = False
+                else:
+                    placement_valid = True
         self.placement_range_indicator = pygame.Surface((300, 300))
         self.placement_range_indicator.set_alpha(127)
         self.placement_range_indicator.fill((0, 0, 0))
@@ -393,7 +396,6 @@ while True:
     if cooldown == 0:
         shop.check()
     shop.draw_button()
-    print(is_mouse_over_archer)
     pygame.display.update()
     spawncounter += 1
     clock.tick(30)
