@@ -23,12 +23,16 @@ class Enemy:
 Enemy(6,10,10,1,1,1)
 Enemy(8,10,10,8,8,8)
 Enemy(5,10,10,10,10,10)
-print("verfügbare Gegner " + str(len(EnemyCollection)))
 def newWave(wave):
     Enemy(6,10,10,1,1,1)
     Enemy(8,15,15,8,8,8)
-    Enemy(5,10,10,10,10,10)
-    print(len(EnemyCollection))
+    Enemy(5,10,10,10,10,10)    
+    Enemy(5,11,11,20,15,15)    
+    Enemy(5,12,12,30,30,20)
+    Enemy(5,10,10,20,60,30)
+    Enemy(3,30,30,200,100,80)
+    Enemy(3,40,40,800,200,100)
+    Enemy(5,50,50,1600,20,150)
     avaylableEnemys = EnemyCollection
     if wave <=10:
         value=Values[wave-1]
@@ -38,7 +42,7 @@ def newWave(wave):
     if wave > 5:
         while value >= 0:
             newenemy = avaylableEnemys[random.randint(0, len(avaylableEnemys)-1)]
-            if newenemy.value <= value/2:
+            if newenemy.value <= value:
                 Wave.append(newenemy)
                 value -= newenemy.value
             else: 
