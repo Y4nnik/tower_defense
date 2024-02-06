@@ -74,6 +74,7 @@ class Enemy:
         self.height = height
         self.health = health
         self.value = value
+        self.howMuchSlowed = 0
         #livingEnemys.append(self)
         self.waypoint1 = pygame.draw.rect(screen, (0, 0, 0), (675, 227 + self.width / 2, 1, 1))
         self.waypoint2 = pygame.draw.rect(screen, (0, 0, 0), (405 - self.width / 2, 227, 1, 1))
@@ -94,6 +95,10 @@ class Enemy:
             global total_gold
             total_gold += 100
             self.pause = 1
+    def GetSlowed(self, slow):
+        if self.howMuchSlowed < 5:
+            self.vector = self.vector * slow
+            self.howMuchSlowed += 1
 
     def doDamage(self):
         Player1.GetDammage(self.dammage)
@@ -185,6 +190,9 @@ class Shop:
             if self.name == "Canon":
                 global is_mouse_over_canon
                 is_mouse_over_canon = True
+            if self.name == "Slower":
+                global is_mouse_over_slower
+                is_mouse_over_slower = True
         elif self.shop_button.collidepoint(mouse) == False:
             if self.name == "Archer":
                 if selected_tower == "archer":
@@ -198,6 +206,12 @@ class Shop:
                 else:
                     pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
                 is_mouse_over_canon = False
+            if self.name == "Slower":
+                if selected_tower == "slower":
+                    pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
+                else:
+                    pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
+                is_mouse_over_slower = False
         else:
            if self.name == "Archer":
                 if selected_tower == "archer":
@@ -206,6 +220,11 @@ class Shop:
                     pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
            if self.name == "Canon":
                 if selected_tower == "canon":
+                    pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
+                else:
+                    pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
+           if self.name == "Slower":
+                if selected_tower == "slower":
                     pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
                 else:
                     pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
@@ -239,6 +258,22 @@ class Tower:
         self.fire_rate = fire_rate
         self.damage = damage
         self.price = price
+        self.radius = 0
+        self.ice = 0
+        self.color = 100
+        self.selected = False
+
+            
+
+    def is_mouse_over(self):
+        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and shop_open == False:
+            self.color = 255
+            self.selected = True
+        
+        elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()):
+            self.color = 100
+            self.selected = False
+            
 
     def shoot(self):
         for self.enemy in self.target_enemys:
@@ -249,10 +284,18 @@ class Tower:
                 if self.cooldown == 0:
                     if self.name == "archer":
                         pygame.draw.line(screen, (255, 0, 0), self.rect.center, self.enemy.figur.center, 2)
+                        self.cooldown = self.fire_rate
                     if self.name == "canon":
-                        pygame.draw.line(screen, (0, 0, 255), self.rect.center, self.enemy.figur.center, 6)
+                        pygame.draw.line(screen, (0, 255, 0), self.rect.center, self.enemy.figur.center, 6)
+                        self.cooldown = self.fire_rate
+                    if self.name == "slower":
+                        pygame.draw.circle(screen, (0, 0, 255), self.rect.center, self.radius, 1)
+                        self.radius += 15
+                        if self.radius >= self.tower_shoting_range.width / 2:
+                            self.radius = 0
+                            self.cooldown = self.fire_rate
+
                     self.enemy.GetDammage(self.damage)
-                    self.cooldown = self.fire_rate
                 else:
                     self.cooldown -= 1
             else:
@@ -260,27 +303,39 @@ class Tower:
                 self.target_enemys.remove(self.enemy)
     def draw(self):
         if self.name == "archer":
-            pygame.draw.rect(screen, (100, 50, 50), self.tower_rect, 0)
+            pygame.draw.rect(screen, (self.color, 50, 50), self.tower_rect, 0)
         if self.name == "canon":
+            pygame.draw.rect(screen, (50, 100, 50), self.tower_rect, 0)
+        if self.name == "slower":
             pygame.draw.rect(screen, (50, 50, 100), self.tower_rect, 0)
+        if self.selected == True and pygame.key.get_pressed()[pygame.K_d] == 1:
+            livingTowers.remove(self)
 
 
     def spwan(self):
-        if self.targets_number == 0:
-            screen.blit(self.new_image, self.rect)
-        if self.targets_number == 1:
-            old_center = self.rect.center
-            self.new_image = pygame.transform.rotate(tower_aiming_indicator_org, self.angle * -180 / math.pi)
-            self.rect = self.new_image.get_rect()
-            self.rect.center = old_center
-            screen.blit(self.new_image, self.rect)
+        if self.name != "slower":
+            if self.targets_number == 0:
+                screen.blit(self.new_image, self.rect)
+            if self.targets_number == 1:
+                old_center = self.rect.center
+                self.new_image = pygame.transform.rotate(tower_aiming_indicator_org, self.angle * -180 / math.pi)
+                self.rect = self.new_image.get_rect()
+                self.rect.center = old_center
+                screen.blit(self.new_image, self.rect)
     
     def detect(self):
         pygame.draw.rect(screen, (0, 0, 0), self.tower_shoting_range, 1)
         for self.enemy in livingEnemys:
-            if self.enemy.figur.colliderect(self.tower_shoting_range) and self.targets_number < self.max_targets:
+            if self.enemy.figur.colliderect(self.tower_shoting_range) and self.targets_number < self.max_targets and self.enemy not in self.target_enemys:
                 self.targets_number += 1
                 self.target_enemys.append(self.enemy)
+            if self.name == "slower" and self.enemy.figur.colliderect(self.tower_shoting_range) and self.ice == 0:
+                self.enemy.GetSlowed(0.8)
+        if self.ice == 0:
+            self.ice = self.fire_rate
+        if self.ice > 0:
+            self.ice -= 1
+        print(self.ice)
                 
 class Game_funktions:
     def __init__(self):
@@ -333,6 +388,7 @@ shop = Shop()
 is_mouse_over_button = False
 is_mouse_over_archer = False
 is_mouse_over_canon = False
+is_mouse_over_slower = False
 shop_open = False    
 placement = False
 placement_valid = True
@@ -340,7 +396,7 @@ cooldown = 0
 checkprice = False
 selected_tower = ""
 price_to_check = 0
-
+Tower_that_mouse_is_over = []
 
 
 while True:
@@ -379,6 +435,9 @@ while True:
                 if selected_tower == "canon":
                     total_gold -= 150
                     canon = Tower(1, 4, 1, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "canon")
+                if selected_tower == "slower":
+                    total_gold -= 125
+                    slower = Tower(1, 0, 1, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
                 placement = False
             if event.button == 1 and is_mouse_over_archer == True:
                 selected_tower = "archer"
@@ -386,6 +445,10 @@ while True:
                 checkprice = True
             if event.button == 1 and is_mouse_over_canon == True:
                 selected_tower = "canon"
+                price_to_check = 150
+                checkprice = True
+            if event.button == 1 and is_mouse_over_slower == True:
+                selected_tower = "slower"
                 price_to_check = 150
                 checkprice = True
             if event.button == 1 and is_mouse_over_button == True and shop_open == True:
@@ -402,6 +465,7 @@ while True:
         archer.spwan()
         archer.detect()
         archer.shoot()
+        archer.is_mouse_over()
     if checkprice == True:
         game.check_price(price_to_check)
     if placement == True:
@@ -410,6 +474,7 @@ while True:
         shop.draw()
         shop.draw_towers("Archer", "100", 1015, 255) 
         shop.draw_towers("Canon", "150", 1015, 255+80) 
+        shop.draw_towers("Slower", "100", 1015, 255+160) 
     if cooldown > 0:
        cooldown -= 1
     if cooldown == 0:
