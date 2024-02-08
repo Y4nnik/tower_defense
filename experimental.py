@@ -517,15 +517,12 @@ while True:
             if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if speed_button.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
-                    print("pressed speed" )
                     if speedmode:
                         speedmode = False
                         gamespeed=basespeed
-                        print(gamespeed)
                     else: 
                         speedmode = True
                         gamespeed = basespeed*3
-                        print(gamespeed)
                 if event.button == 3:
                     placement = False
                     checkprice = False
