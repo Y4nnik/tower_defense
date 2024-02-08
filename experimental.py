@@ -109,7 +109,7 @@ class Enemy:
     def DrawEnemy(self):
         self.figur = pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.height))
         healthbar = self.health/self.basehealth*self.width
-        self.healthbar = pygame.draw.rect(screen, (75,219,27), (self.position[0], self.position[1]-3, healthbar, 3))
+        self.healthbar = pygame.draw.rect(screen, (75,219,27), (self.position[0], self.position[1]-4, healthbar, 3))
 
     def Move(self):
         self.position += self.vector
