@@ -395,6 +395,7 @@ while True:
          Enemys.Move()
          Enemys.DrawEnemy()
     for archer in livingTowers:
+        archer.draw()
         archer.spwan()
         archer.detect()
         archer.shoot()
