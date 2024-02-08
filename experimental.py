@@ -6,7 +6,6 @@ import endscreen
 from newenemy import Enemy
 pygame.font.init() 
 
-
 my_font = pygame.font.SysFont('Comic Sans MS', 30)#definiert Schriftart
 vector = pygame.math.Vector2
 
@@ -341,11 +340,11 @@ def startgame():
     is_mouse_over_button = False
     is_mouse_over_archer = False
     is_mouse_over_canon = False
-    shop_open = False    
     placement = False
     placement_valid = True
     cooldown = 0
     checkprice = False
+    shop_open = False
     selected_tower = ""
     price_to_check = 0
 
@@ -428,15 +427,22 @@ def startgame():
         clock.tick(230)
 
 startgame()
+
+restart_button = pygame.draw.rect(screen, (0,0,0),(400, 330, 271, 50))
 restart = False
 while True:
      endscreen.draw_button(screen)
+     mouse = pygame.mouse.get_pos()
 
 
      for event in pygame.event.get():
-          if event.type == pygame.MOUSEBUTTONDOWN:
-              if event.button == 1 and is_mouse_over_button == True and restart == True:
-                  break
+          if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouses = pygame.mouse.get_pos()
+            if restart_button.collidepoint(mouses):
+                startgame()
+        #   if event.type == pygame.MOUSEBUTTONDOWN:
+        #       if event.button == 1 and screen.restart_button.collidepoint(mouse):
+        #           startgame()
           if event.type == pygame.QUIT: sys.exit()
      pygame.display.update()
      
