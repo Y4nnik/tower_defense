@@ -72,7 +72,7 @@ class Player:
 
 
 class Enemy:
-    def __init__(self, speed, width, height, health, dammage, value):
+    def __init__(self, speed, width, height, health, dammage, value, image):
         self.position = (676 - width / 2, 0 - height / 2)
         self.vector = vector(0, speed)
         self.width = width
@@ -83,6 +83,7 @@ class Enemy:
         self.health = health
         self.value = value
         self.howMuchSlowed = 0
+        self.image = image
         #livingEnemys.append(self)
         self.waypoint1 = pygame.draw.rect(screen, (0, 0, 0), (675, 227 + self.width / 2, 1, 1))
         self.waypoint2 = pygame.draw.rect(screen, (0, 0, 0), (405 - self.width / 2, 227, 1, 1))
@@ -112,38 +113,48 @@ class Enemy:
         Player1.GetDammage(self.dammage)
 
     def DrawEnemy(self):
-        self.figur = pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.height))
+        screen.blit(self.image, (self.position[0], self.position[1]))
+        self.figur = pygame.Rect( (self.position[0], self.position[1], self.width, self.height))
         healthbar = self.health/self.basehealth*self.width
+        pygame.draw.rect(screen, (210,15,2), (self.position[0], self.position[1]-4, self.width, 3))
         self.healthbar = pygame.draw.rect(screen, (75,219,27), (self.position[0], self.position[1]-4, healthbar, 3))
+
 
     def Move(self):
         self.position += self.vector
         if self.figur.colliderect(self.waypoint1):
             self.vector.rotate_ip(90)
+            self.image = pygame.transform.rotate(self.image, -90)
             self.position = (675 - self.width / 2, 227 - self.height / 2)
             self.waypoint1 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint2):
             self.vector.rotate_ip(90)
+            self.image = pygame.transform.rotate(self.image, -90)
             self.position = (405 - self.width / 2, 227 - self.height / 2)
             self.waypoint2 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint3):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (405 - self.width / 2, 103 - self.height / 2)
             self.waypoint3 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint4):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (188 - self.width / 2, 103 - self.height / 2)
             self.waypoint4 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint5):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (188 - self.width / 2, 492 - self.height / 2)
             self.waypoint5 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint6):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (969 - self.width / 2, 492 - self.height / 2)
             self.waypoint6 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint7):
             self.vector.rotate_ip(90)
+            self.image = pygame.transform.rotate(self.image, -90)
             self.position = (969 - self.width / 2, 204 - self.height / 2)
             self.waypoint7 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
 
@@ -430,7 +441,7 @@ class Game_funktions:
             self.placement_indicator.fill((255, 0, 0))
         screen.blit(self.placement_indicator, (pygame.mouse.get_pos()[0] - 25, pygame.mouse.get_pos()[1] - 25))  
 game = Game_funktions()
-Player1=Player(1)
+Player1=Player(100)
 shop = Shop()
 basespeed = 30
 gamespeed = 30
@@ -502,7 +513,7 @@ while True:
                 savelist = []
                 savelist = newenemy.newWave(wave)
                 for enemys in savelist:
-                    Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value))
+                    Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value, enemys.picture))
                 
             if len(Wavelist)>0:
                 livingEnemys.append(Wavelist[0])
