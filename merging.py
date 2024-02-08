@@ -175,7 +175,6 @@ class Shop:
     
     def draw_towers(self, name, price, x, y):
         self.name = name
-
         self.font = pygame.font.SysFont('Corbel',30) 
         self.smallfont = pygame.font.SysFont('Corbel',20)
         text = self.font.render(self.name , True , (255,255,255)) 
@@ -243,13 +242,14 @@ class Tower:
     def __init__(self, number_targets, damage, range, fire_rate, price, x_pos, y_pos, name):
         self.x_pos = x_pos
         self.y_pos = y_pos
+        self.range = range
         self.name = name
         self.tower_rect = pygame.Rect(self.x_pos-25, self.y_pos-25, 50, 50)
         self.targets_number = 0
         self.max_targets = number_targets
         self.target_enemys = []
         self.angle = 0
-        self.tower_shoting_range = pygame.Rect(self.x_pos - 150, self.y_pos - 150, 300, 300)
+        self.tower_shoting_range = pygame.Rect(self.x_pos - self.range/2, self.y_pos - self.range/2, self.range, self.range)
         livingTowers.append(self)
         self.rect = tower_aiming_indicator.get_rect()
         self.rect.center = (self.tower_rect.centerx, self.tower_rect.centery)
@@ -260,17 +260,17 @@ class Tower:
         self.price = price
         self.radius = 0
         self.ice = 0
-        self.color = 100
         self.selected = False
+        self.upgrade_button1 = pygame.Rect(self.tower_shoting_range.centerx +50, self.tower_shoting_range.centery - 25, 100, 50)
+        self.upgrade_button2 = pygame.Rect(self.tower_shoting_range.centerx -150, self.tower_shoting_range.centery - 25, 100, 50)
 
             
 
     def is_mouse_over(self):
         if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and shop_open == False:
-            self.color = 255
             self.selected = True
         
-        elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()):
+        elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button1.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button2.collidepoint(pygame.mouse.get_pos()):
             self.color = 100
             self.selected = False
             
@@ -302,8 +302,14 @@ class Tower:
                 self.targets_number -= 1
                 self.target_enemys.remove(self.enemy)
     def draw(self):
+        self.tower_shoting_range = pygame.Rect(self.x_pos - self.range/2, self.y_pos - self.range/2, self.range, self.range)
+        if self.selected == True:
+            self.range_rect = pygame.Surface(( self.range, self.range))
+            self.range_rect.set_alpha(94)
+            self.range_rect.fill((0, 0, 0))
+            screen.blit(self.range_rect, (self.tower_shoting_range.x, self.tower_shoting_range.y))
         if self.name == "archer":
-            pygame.draw.rect(screen, (self.color, 50, 50), self.tower_rect, 0)
+            pygame.draw.rect(screen, (100, 50, 50), self.tower_rect, 0)
         if self.name == "canon":
             pygame.draw.rect(screen, (50, 100, 50), self.tower_rect, 0)
         if self.name == "slower":
@@ -311,7 +317,31 @@ class Tower:
         if self.selected == True and pygame.key.get_pressed()[pygame.K_d] == 1:
             livingTowers.remove(self)
 
+    def upgrade(self):
+        global total_gold
+        if self.selected == True:
+            self.smallfont = pygame.font.SysFont('Corbel',15) 
+            text1 = self.smallfont.render('Upgrade' , True , (255,255,255)) 
+            text2 = self.smallfont.render('Upgrade2' , True , (255,255,255))
+            mouse = pygame.mouse.get_pos()
+            if self.upgrade_button1.collidepoint(mouse):
+                pygame.draw.rect(screen, (155, 155, 155), self.upgrade_button1, 0)
+                if pygame.mouse.get_pressed()[0] == 1 and total_gold >= 100:
+                    self.range += 10
+                    total_gold -= 100
+            else:
+                pygame.draw.rect(screen, (0, 0, 0), self.upgrade_button1, 0)
+            if self.upgrade_button2.collidepoint(mouse):
+                pygame.draw.rect(screen, (155, 155, 155), self.upgrade_button2, 0)
+                if pygame.mouse.get_pressed()[0] == 1 and total_gold >= 150:
+                   self.damage += 1
+                   total_gold -= 150
+            else:
+                pygame.draw.rect(screen, (0, 0, 0), self.upgrade_button2, 0)
+            screen.blit(text1 , (self.upgrade_button1.x, self.upgrade_button1.y))
+            screen.blit(text2 , (self.upgrade_button2.x, self.upgrade_button2.y))
 
+            
     def spwan(self):
         if self.name != "slower":
             if self.targets_number == 0:
@@ -324,7 +354,6 @@ class Tower:
                 screen.blit(self.new_image, self.rect)
     
     def detect(self):
-        pygame.draw.rect(screen, (0, 0, 0), self.tower_shoting_range, 1)
         for self.enemy in livingEnemys:
             if self.enemy.figur.colliderect(self.tower_shoting_range) and self.targets_number < self.max_targets and self.enemy not in self.target_enemys:
                 self.targets_number += 1
@@ -335,7 +364,7 @@ class Tower:
             self.ice = self.fire_rate
         if self.ice > 0:
             self.ice -= 1
-        print(self.ice)
+
                 
 class Game_funktions:
     def __init__(self):
@@ -371,10 +400,18 @@ class Game_funktions:
                     placement_valid = False
                 else:
                     placement_valid = True
-        self.placement_range_indicator = pygame.Surface((300, 300))
+        if selected_tower == "archer":
+            self.placement_range_indicator = pygame.Surface((300, 300))
+        if selected_tower == "canon":
+            self.placement_range_indicator = pygame.Surface((400, 400))
+        if selected_tower == "slower":
+            self.placement_range_indicator = pygame.Surface((250, 250))
+            
         self.placement_range_indicator.set_alpha(127)
         self.placement_range_indicator.fill((0, 0, 0))
-        screen.blit(self.placement_range_indicator, (pygame.mouse.get_pos()[0] - 150, pygame.mouse.get_pos()[1] - 150))               
+        height = self.placement_range_indicator.get_height()
+        width = self.placement_range_indicator.get_width()
+        screen.blit(self.placement_range_indicator, (pygame.mouse.get_pos()[0] - height/2, pygame.mouse.get_pos()[1] - width/2))               
         self.placement_indicator = pygame.Surface((50, 50))
         self.placement_indicator.set_alpha(127)
         if placement_valid == True:
@@ -431,13 +468,13 @@ while True:
             if event.button == 1 and placement == True and placement_valid == True:
                 if selected_tower == "archer":
                     total_gold -= 100
-                    archer = Tower(1, 1, 1, 5, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "archer")
+                    archer = Tower(1, 1, 300, 5, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "archer")
                 if selected_tower == "canon":
                     total_gold -= 150
-                    canon = Tower(1, 4, 1, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "canon")
+                    canon = Tower(1, 4, 400, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "canon")
                 if selected_tower == "slower":
                     total_gold -= 125
-                    slower = Tower(1, 0, 1, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
+                    slower = Tower(1, 0, 250, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
                 placement = False
             if event.button == 1 and is_mouse_over_archer == True:
                 selected_tower = "archer"
@@ -462,10 +499,11 @@ while True:
          Enemys.DrawEnemy()
     for archer in livingTowers:
         archer.draw()
+        archer.shoot()
         archer.spwan()
         archer.detect()
-        archer.shoot()
         archer.is_mouse_over()
+        archer.upgrade()
     if checkprice == True:
         game.check_price(price_to_check)
     if placement == True:
