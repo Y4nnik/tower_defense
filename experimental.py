@@ -16,7 +16,8 @@ background = pygame.image.load("images/background.png")
 pentagon = pygame.image.load("images/fuenfeck.png")
 brokenheart = pygame.image.load("images/damage.png")
 heart = pygame.image.load("images/heart.png")
-
+speedarrow = pygame.image.load("images/speedarrow.png")
+doublespeedarrow = pygame.image.load("images/doublespeedarrow.png")
 screen = pygame.display.set_mode([1290, 717])  # Erzeugt Fenster mit Höhe und Breite in Pixeln
 clock = pygame.time.Clock()
 Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
@@ -37,7 +38,11 @@ def draw():
     screen.blit(text_wave, (260,5))
     screen.blit(text_remainingenemys, (770, 5))
     screen.blit(heart, (70, 10))
-
+    pygame.draw.rect(screen, (40,40,40), (10, 650, 50, 50))
+    if speedmode: screen.blit(doublespeedarrow, (10, 650))
+    else: screen.blit(speedarrow, (10, 650))
+        
+    
     global killed
     if killed != 0: 
         screen.blit(brokenheart, (1252, 185))
@@ -427,6 +432,9 @@ class Game_funktions:
 game = Game_funktions()
 Player1=Player(1)
 shop = Shop()
+basespeed = 30
+gamespeed = 30
+speedmode = False
 is_mouse_over_button = False
 is_mouse_over_archer = False
 is_mouse_over_canon = False
@@ -439,6 +447,7 @@ checkprice = False
 selected_tower = ""
 price_to_check = 0
 Tower_that_mouse_is_over = []
+speed_button = pygame.Rect(10, 650, 50, 50)
 
 game_state = "running"
 while True:
@@ -507,6 +516,16 @@ while True:
                 sys.exit()#Spiel schließen
             if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if speed_button.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
+                    print("pressed speed" )
+                    if speedmode:
+                        speedmode = False
+                        gamespeed=basespeed
+                        print(gamespeed)
+                    else: 
+                        speedmode = True
+                        gamespeed = basespeed*3
+                        print(gamespeed)
                 if event.button == 3:
                     placement = False
                     checkprice = False
@@ -568,4 +587,4 @@ while True:
         draw()
         pygame.display.update()
         if spawncounter != 20: spawncounter += 1
-    clock.tick(30)
+    clock.tick(gamespeed)
