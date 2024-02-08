@@ -12,7 +12,7 @@ killed = 0 #für Herz bei tot von Enemy (Counter)
 my_font = pygame.font.SysFont('Comic Sans MS', 30)#definiert Schriftart
 vector = pygame.math.Vector2
 
-background = pygame.image.load("images/background.png")
+background = pygame.image.load("images/backgroundimmage.png")
 pentagon = pygame.image.load("images/fuenfeck.png")
 brokenheart = pygame.image.load("images/damage.png")
 heart = pygame.image.load("images/heart.png")
