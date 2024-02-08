@@ -441,16 +441,13 @@ while True:
     if spawncounter == 20:
          if len(Wavelist)==0 and len(livingEnemys)==0:
              wave += 1
-             print("Aktuelle Welle: " + str(wave))
              savelist = []
              savelist = newenemy.newWave(wave)
              for enemys in savelist:
                  Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value))
              
-             print("Länge der Welle: " + str(len(Wavelist)))
          if len(Wavelist)>0:
             livingEnemys.append(Wavelist[0])
-            print("Lebende Gegner: " + str(len(livingEnemys)))
             Wavelist.remove(Wavelist[0])
             
             spawncounter = 0    
