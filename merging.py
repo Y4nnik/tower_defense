@@ -100,7 +100,7 @@ class Enemy:
     def GetDammage(self, damageTaken):
         self.health -= damageTaken
         if self.health <= 0 and self.pause == 0: 
-            livingEnemys.remove(self)
+            if self in livingEnemys: livingEnemys.remove(self)
             global total_gold
             total_gold += 100
             self.pause = 1
@@ -162,7 +162,7 @@ class Enemy:
             global killed
             killed = 5
             Player1.GetDammage(self.dammage)
-            livingEnemys.remove(self)
+            if self in livingEnemys: livingEnemys.remove(self)
 
 
 class Shop:
@@ -326,7 +326,7 @@ class Tower:
                     self.cooldown -= 1
             else:
                 self.targets_number -= 1
-                self.target_enemys.remove(self.enemy)
+                if self.enemy in self.target_enemys: self.target_enemys.remove(self.enemy)
     def draw(self):
         self.tower_shoting_range = pygame.Rect(self.x_pos - self.range/2, self.y_pos - self.range/2, self.range, self.range)
         if self.selected == True:
@@ -341,7 +341,7 @@ class Tower:
         if self.name == "slower":
             pygame.draw.rect(screen, (50, 50, 100), self.tower_rect, 0)
         if self.selected == True and pygame.key.get_pressed()[pygame.K_d] == 1:
-            livingTowers.remove(self)
+            if self in livingTowers: livingTowers.remove(self)
 
     def upgrade(self):
         global total_gold

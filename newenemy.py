@@ -74,7 +74,7 @@ def newWave(wave):
                     value = 0
                 value -= avaylableEnemys[0].value
                 Wave.append(avaylableEnemys[0])
-                avaylableEnemys.remove(newenemy)
+                if newenemy in avaylableEnemys: avaylableEnemys.remove(newenemy)
                 
     elif wave == 1:
         Wave.append(avaylableEnemys[0])
