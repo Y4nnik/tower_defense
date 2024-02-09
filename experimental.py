@@ -444,6 +444,7 @@ game = Game_funktions()
 Player1=Player(100)
 shop = Shop()
 basespeed = 30
+spawnsumme = 20
 gamespeed = 30
 speedmode = False
 is_mouse_over_button = False
@@ -476,6 +477,7 @@ while True:
         if restart_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
             game_state = "running"
             wave = 0
+            spawnsumme = 20
             Wavelist = []
             killed = 0
             livingEnemys = []
@@ -507,9 +509,11 @@ while True:
                 pygame.quit()
                 sys.exit()
     if game_state == "running":
-        if spawncounter == 20:
+        if spawncounter >= spawnsumme:
             if len(Wavelist)==0 and len(livingEnemys)==0:
                 wave += 1
+                if wave % 10 == 0:
+                    spawnsumme = spawnsumme *3/4
                 savelist = []
                 savelist = newenemy.newWave(wave)
                 for enemys in savelist:
