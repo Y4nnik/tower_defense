@@ -12,11 +12,12 @@ killed = 0 #für Herz bei tot von Enemy (Counter)
 my_font = pygame.font.SysFont('Comic Sans MS', 30)#definiert Schriftart
 vector = pygame.math.Vector2
 
-background = pygame.image.load("images/background.png")
+background = pygame.image.load("images/backgroundimmage.png")
 pentagon = pygame.image.load("images/fuenfeck.png")
 brokenheart = pygame.image.load("images/damage.png")
 heart = pygame.image.load("images/heart.png")
-
+speedarrow = pygame.image.load("images/speedarrow.png")
+doublespeedarrow = pygame.image.load("images/doublespeedarrow.png")
 screen = pygame.display.set_mode([1290, 717])  # Erzeugt Fenster mit Höhe und Breite in Pixeln
 clock = pygame.time.Clock()
 Finish=pygame.draw.rect(screen, (0,0,0), (1287, 172, 1, 64))
@@ -37,7 +38,11 @@ def draw():
     screen.blit(text_wave, (260,5))
     screen.blit(text_remainingenemys, (770, 5))
     screen.blit(heart, (70, 10))
-
+    pygame.draw.rect(screen, (40,40,40), (10, 650, 50, 50))
+    if speedmode: screen.blit(doublespeedarrow, (10, 650))
+    else: screen.blit(speedarrow, (10, 650))
+        
+    
     global killed
     if killed != 0: 
         screen.blit(brokenheart, (1252, 185))
@@ -61,20 +66,24 @@ class Player:
         self.health = Health
     def GetDammage(self, damageTaken):
         self.health -= damageTaken
-        if self.health <= 0: print("Game Over :P")
+        if self.health <= 0: 
+            global game_state
+            game_state = "game over"
 
 
 class Enemy:
-    def __init__(self, speed, width, height, health, dammage, value):
+    def __init__(self, speed, width, height, health, dammage, value, image):
         self.position = (676 - width / 2, 0 - height / 2)
         self.vector = vector(0, speed)
         self.width = width
         self.dammage=dammage
         self.pause=0
+        self.basehealth = health
         self.height = height
         self.health = health
         self.value = value
         self.howMuchSlowed = 0
+        self.image = image
         #livingEnemys.append(self)
         self.waypoint1 = pygame.draw.rect(screen, (0, 0, 0), (675, 227 + self.width / 2, 1, 1))
         self.waypoint2 = pygame.draw.rect(screen, (0, 0, 0), (405 - self.width / 2, 227, 1, 1))
@@ -104,36 +113,48 @@ class Enemy:
         Player1.GetDammage(self.dammage)
 
     def DrawEnemy(self):
-        self.figur = pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.height))
+        screen.blit(self.image, (self.position[0], self.position[1]))
+        self.figur = pygame.Rect( (self.position[0], self.position[1], self.width, self.height))
+        healthbar = self.health/self.basehealth*self.width
+        pygame.draw.rect(screen, (210,15,2), (self.position[0], self.position[1]-4, self.width, 3))
+        self.healthbar = pygame.draw.rect(screen, (75,219,27), (self.position[0], self.position[1]-4, healthbar, 3))
+
 
     def Move(self):
         self.position += self.vector
         if self.figur.colliderect(self.waypoint1):
             self.vector.rotate_ip(90)
+            self.image = pygame.transform.rotate(self.image, -90)
             self.position = (675 - self.width / 2, 227 - self.height / 2)
             self.waypoint1 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint2):
             self.vector.rotate_ip(90)
+            self.image = pygame.transform.rotate(self.image, -90)
             self.position = (405 - self.width / 2, 227 - self.height / 2)
             self.waypoint2 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint3):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (405 - self.width / 2, 103 - self.height / 2)
             self.waypoint3 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint4):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (188 - self.width / 2, 103 - self.height / 2)
             self.waypoint4 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint5):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (188 - self.width / 2, 492 - self.height / 2)
             self.waypoint5 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint6):
             self.vector.rotate_ip(-90)
+            self.image = pygame.transform.rotate(self.image, 90)
             self.position = (969 - self.width / 2, 492 - self.height / 2)
             self.waypoint6 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
         elif self.figur.colliderect(self.waypoint7):
             self.vector.rotate_ip(90)
+            self.image = pygame.transform.rotate(self.image, -90)
             self.position = (969 - self.width / 2, 204 - self.height / 2)
             self.waypoint7 = pygame.draw.rect(screen, (0, 0, 0), (-10, -10, 1, 1))
 
@@ -267,12 +288,17 @@ class Tower:
             
 
     def is_mouse_over(self):
-        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and shop_open == False:
+        global number_selected
+        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and placement == False and number_selected == 0:
+            move_tower = livingTowers.pop(livingTowers.index(self))
+            livingTowers.append(move_tower)
             self.selected = True
+            number_selected = 1
         
         elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button1.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button2.collidepoint(pygame.mouse.get_pos()):
             self.color = 100
             self.selected = False
+            number_selected = 0
             
 
     def shoot(self):
@@ -422,6 +448,10 @@ class Game_funktions:
 game = Game_funktions()
 Player1=Player(100)
 shop = Shop()
+basespeed = 30
+spawnsumme = 20
+gamespeed = 30
+speedmode = False
 is_mouse_over_button = False
 is_mouse_over_archer = False
 is_mouse_over_canon = False
@@ -434,89 +464,187 @@ checkprice = False
 selected_tower = ""
 price_to_check = 0
 Tower_that_mouse_is_over = []
+speed_button = pygame.Rect(10, 650, 50, 50)
+number_selected = 0
 
-
+game_state = "startMenu"
 while True:
     screen.blit(background, (0,0))
-    if spawncounter == 20:
-         if len(Wavelist)==0 and len(livingEnemys)==0:
-             wave += 1
-             savelist = []
-             savelist = newenemy.newWave(wave)
-             for enemys in savelist:
-                 Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value))
-             
-         if len(Wavelist)>0:
-            livingEnemys.append(Wavelist[0])
-            Wavelist.remove(Wavelist[0])
+    if game_state == "startMenu":
+        smallfont = pygame.font.SysFont('Corbel',35) 
+        text = smallfont.render('Start' , True , (255,255,255)) 
+        start_button = pygame.Rect(1010, 660, 271, 50)
+        mouse = pygame.mouse.get_pos()
+        if start_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), start_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), start_button, 0)
+        screen.blit(text , (start_button.x + 60, start_button.y + 10))
+        if start_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            game_state = "running"
+        else:
+            is_mouse_over_button = False
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type ==pygame.QUIT: 
+                pygame.quit()
+                sys.exit()
+
+
+    if game_state == "game over":
+        smallfont = pygame.font.SysFont('Corbel',35) 
+        text = smallfont.render('Restart' , True , (255,255,255)) 
+        restart_button = pygame.Rect(1010, 660, 271, 50)
+        mouse = pygame.mouse.get_pos()
+        if restart_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), restart_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), restart_button, 0)
+        screen.blit(text , (restart_button.x + 60, restart_button.y + 10))
+        if restart_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            game_state = "running"
+            wave = 0
+            spawnsumme = 20
+            Wavelist = []
+            killed = 0
+            livingEnemys = []
+            spawncounter = 0
+            livingTowers = []
+            total_gold = 1000
+            Player1=Player(100)
+            shop = Shop()
+            is_mouse_over_button = False
+            is_mouse_over_archer = False
+            is_mouse_over_canon = False
+            is_mouse_over_slower = False
+            shop_open = False    
+            placement = False
+            placement_valid = True
+            cooldown = 0
+            checkprice = False
+            selected_tower = ""
+            price_to_check = 0
+            Tower_that_mouse_is_over = []
+            game_state = "running"
             
-            spawncounter = 0    
-                      
-    for event in pygame.event.get():#Tastatur/Spielefenstereingaben abgreifen
-        if event.type ==pygame.QUIT: 
-             pygame.quit()
-             sys.exit()#Spiel schließen
-        if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 3:
-                placement = False
-                checkprice = False
-                selected_tower = ""
-            if event.button == 1 and placement == True and placement_valid == True:
-                if selected_tower == "archer":
-                    total_gold -= 100
-                    archer = Tower(1, 1, 300, 5, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "archer")
-                if selected_tower == "canon":
-                    total_gold -= 150
-                    canon = Tower(1, 4, 400, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "canon")
-                if selected_tower == "slower":
-                    total_gold -= 125
-                    slower = Tower(1, 0, 250, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
-                placement = False
-            if event.button == 1 and is_mouse_over_archer == True:
-                selected_tower = "archer"
-                price_to_check = 100
-                checkprice = True
-            if event.button == 1 and is_mouse_over_canon == True:
-                selected_tower = "canon"
-                price_to_check = 150
-                checkprice = True
-            if event.button == 1 and is_mouse_over_slower == True:
-                selected_tower = "slower"
-                price_to_check = 150
-                checkprice = True
-            if event.button == 1 and is_mouse_over_button == True and shop_open == True:
-                shop_open = False
-                cooldown = 10
+                       
+        else:
+            is_mouse_over_button = False
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type ==pygame.QUIT: 
+                pygame.quit()
+                sys.exit()
+    if game_state == "paused":
+        smallfont = pygame.font.SysFont('Corbel',35) 
+        text = smallfont.render('Continue' , True , (255,255,255)) 
+        continue_button = pygame.Rect(1010, 660, 271, 50)
+        mouse = pygame.mouse.get_pos()
+        if continue_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), continue_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), continue_button, 0)
+        screen.blit(text , (continue_button.x + 60, continue_button.y + 10))
+        if continue_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            game_state = "running"
+        else:
+            is_mouse_over_button = False
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type ==pygame.QUIT: 
+                pygame.quit()
+                sys.exit()
+    
+    if game_state == "running":
+        if spawncounter >= spawnsumme:
+            if len(Wavelist)==0 and len(livingEnemys)==0:
+                wave += 1
+                if wave % 10 == 0:
+                    spawnsumme = spawnsumme *3/4
+                savelist = []
+                savelist = newenemy.newWave(wave)
+                for enemys in savelist:
+                    Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value, enemys.picture))
+                
+            if len(Wavelist)>0:
+                livingEnemys.append(Wavelist[0])
+                Wavelist.remove(Wavelist[0])
+                
+                spawncounter = 0    
+                        
+        for event in pygame.event.get():#Tastatur/Spielefenstereingaben abgreifen
+            if event.type ==pygame.QUIT: 
+                pygame.quit()
+                sys.exit()#Spiel schließen
+            if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
+            if pygame.key.get_pressed()[pygame.K_ESCAPE] == 1:
+                game_state = "paused"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if speed_button.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
+                    if speedmode:
+                        speedmode = False
+                        gamespeed=basespeed
+                    else: 
+                        speedmode = True
+                        gamespeed = basespeed*3
+                if event.button == 3:
+                    placement = False
+                    checkprice = False
+                    selected_tower = ""
+                if event.button == 1 and placement == True and placement_valid == True:
+                    if selected_tower == "archer":
+                        total_gold -= 100
+                        archer = Tower(1, 1, 300, 5, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "archer")
+                    if selected_tower == "canon":
+                        total_gold -= 150
+                        canon = Tower(1, 4, 400, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "canon")
+                    if selected_tower == "slower":
+                        total_gold -= 125
+                        slower = Tower(1, 0, 250, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
+                if event.button == 1 and is_mouse_over_archer == True:
+                    selected_tower = "archer"
+                    price_to_check = 100
+                    checkprice = True
+                if event.button == 1 and is_mouse_over_canon == True:
+                    selected_tower = "canon"
+                    price_to_check = 150
+                    checkprice = True
+                if event.button == 1 and is_mouse_over_slower == True:
+                    selected_tower = "slower"
+                    price_to_check = 150
+                    checkprice = True
+                if event.button == 1 and is_mouse_over_button == True and shop_open == True:
+                    shop_open = False
+                    cooldown = 10
 
 
 
-    for Enemys in livingEnemys:
-         Enemys.Move()
-         Enemys.DrawEnemy()
-    for archer in livingTowers:
-        archer.draw()
-        archer.shoot()
-        archer.spwan()
-        archer.detect()
-        archer.is_mouse_over()
-        archer.upgrade()
-    if checkprice == True:
-        game.check_price(price_to_check)
-    if placement == True:
-        game.placement_funktion()
-    if shop_open == True:
-        shop.draw()
-        shop.draw_towers("Archer", "100", 1015, 255) 
-        shop.draw_towers("Canon", "150", 1015, 255+80) 
-        shop.draw_towers("Slower", "100", 1015, 255+160) 
-    if cooldown > 0:
-       cooldown -= 1
-    if cooldown == 0:
-        shop.check()
-    shop.draw_button()
+        for Enemys in livingEnemys:
+            Enemys.Move()
+            Enemys.DrawEnemy()
+        for archer in livingTowers:
+            archer.draw()
+            archer.shoot()
+            archer.spwan()
+            archer.detect()
+            archer.is_mouse_over()
+            archer.upgrade()
+        if checkprice == True:
+            game.check_price(price_to_check)
+        if placement == True:
+            game.placement_funktion()
+        if shop_open == True:
+            shop.draw()
+            shop.draw_towers("Archer", "100", 1015, 255) 
+            shop.draw_towers("Canon", "150", 1015, 255+80) 
+            shop.draw_towers("Slower", "100", 1015, 255+160) 
+        if cooldown > 0:
+            cooldown -= 1
+        if cooldown == 0:
+            shop.check()
+        shop.draw_button()
 
-    draw()
-    pygame.display.update()
-    if spawncounter != 20: spawncounter += 1
-    clock.tick(30)
+        draw()
+        pygame.display.update()
+        if spawncounter != 20: spawncounter += 1
+    clock.tick(gamespeed)
