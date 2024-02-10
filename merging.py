@@ -284,22 +284,22 @@ class Tower:
         self.selected = False
         self.upgrade_button1 = pygame.Rect(self.tower_shoting_range.centerx +50, self.tower_shoting_range.centery - 25, 100, 50)
         self.upgrade_button2 = pygame.Rect(self.tower_shoting_range.centerx -150, self.tower_shoting_range.centery - 25, 100, 50)
-
+        self.slowAmount = 0.8
             
 
     def is_mouse_over(self):
-        global number_selected
-        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and placement == False and number_selected == 0:
+        global number_selected_towers
+        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and placement == False and number_selected_towers == 0:
             move_tower = livingTowers.pop(livingTowers.index(self))
             livingTowers.append(move_tower)
             self.selected = True
-            number_selected = 1
+            number_selected_towers += 1
         
-        elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button1.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button2.collidepoint(pygame.mouse.get_pos()):
+        elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button1.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button2.collidepoint(pygame.mouse.get_pos()) and self.selected == True and number_selected_towers == 1:
             self.color = 100
             self.selected = False
-            number_selected = 0
-            
+            number_selected_towers -= 1
+        print(number_selected_towers)  
 
     def shoot(self):
         for self.enemy in self.target_enemys:
@@ -345,6 +345,7 @@ class Tower:
 
     def upgrade(self):
         global total_gold
+        global mouse_clicked
         if self.selected == True:
             self.smallfont = pygame.font.SysFont('Corbel',15) 
             text1 = self.smallfont.render('Upgrade' , True , (255,255,255)) 
@@ -352,16 +353,32 @@ class Tower:
             mouse = pygame.mouse.get_pos()
             if self.upgrade_button1.collidepoint(mouse):
                 pygame.draw.rect(screen, (155, 155, 155), self.upgrade_button1, 0)
-                if pygame.mouse.get_pressed()[0] == 1 and total_gold >= 100:
-                    self.range += 10
+                if pygame.mouse.get_pressed()[0] == 1 and total_gold >= 100 and mouse_clicked == False:
+                    if self.name == "archer":
+                        self.range += 10
+                    if self.name == "canon":
+                        self.damage += 1
+                    if self.name == "slower":
+                        self.fire_rate -= 1
                     total_gold -= 100
+                    mouse_clicked = True
+                if pygame.mouse.get_pressed()[0] == 0 and mouse_clicked == True:
+                    mouse_clicked = False
             else:
                 pygame.draw.rect(screen, (0, 0, 0), self.upgrade_button1, 0)
             if self.upgrade_button2.collidepoint(mouse):
                 pygame.draw.rect(screen, (155, 155, 155), self.upgrade_button2, 0)
-                if pygame.mouse.get_pressed()[0] == 1 and total_gold >= 150:
-                   self.damage += 1
-                   total_gold -= 150
+                if pygame.mouse.get_pressed()[0] == 1 and total_gold >= 150 and mouse_clicked == False:
+                    if self.name == "archer":
+                        self.damage += 10
+                    if self.name == "canon":
+                        self.fire_rate += 10
+                    if self.name == "slower":
+                        self.slowAmount -= 0.1
+                    total_gold -= 150
+                    mouse_clicked = True
+                if pygame.mouse.get_pressed()[0] == 0 and mouse_clicked == True:
+                    mouse_clicked = False
             else:
                 pygame.draw.rect(screen, (0, 0, 0), self.upgrade_button2, 0)
             screen.blit(text1 , (self.upgrade_button1.x, self.upgrade_button1.y))
@@ -385,7 +402,7 @@ class Tower:
                 self.targets_number += 1
                 self.target_enemys.append(self.enemy)
             if self.name == "slower" and self.enemy.figur.colliderect(self.tower_shoting_range) and self.ice == 0:
-                self.enemy.GetSlowed(0.8)
+                self.enemy.GetSlowed(self.slowAmount)
         if self.ice == 0:
             self.ice = self.fire_rate
         if self.ice > 0:
@@ -465,8 +482,8 @@ selected_tower = ""
 price_to_check = 0
 Tower_that_mouse_is_over = []
 speed_button = pygame.Rect(10, 650, 50, 50)
-number_selected = 0
-
+number_selected_towers = 0
+mouse_clicked = False
 game_state = "startMenu"
 while True:
     screen.blit(background, (0,0))
