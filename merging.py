@@ -213,6 +213,12 @@ class Shop:
             if self.name == "Slower":
                 global is_mouse_over_slower
                 is_mouse_over_slower = True
+            if self.name == "Inferno":
+                global is_mouse_over_inferno
+                is_mouse_over_inferno = True
+            if self.name == "Tesla":
+                global is_mouse_over_tesla
+                is_mouse_over_tesla = True
         elif self.shop_button.collidepoint(mouse) == False:
             if self.name == "Archer":
                 if selected_tower == "archer":
@@ -232,6 +238,18 @@ class Shop:
                 else:
                     pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
                 is_mouse_over_slower = False
+            if self.name == "Inferno":
+                if selected_tower == "inferno":
+                    pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
+                else:
+                    pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
+                is_mouse_over_inferno = False
+            if self.name == "Tesla":
+                if selected_tower == "tesla":
+                    pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
+                else:
+                    pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
+                is_mouse_over_tesla = False
         else:
            if self.name == "Archer":
                 if selected_tower == "archer":
@@ -245,6 +263,16 @@ class Shop:
                     pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
            if self.name == "Slower":
                 if selected_tower == "slower":
+                    pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
+                else:
+                    pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
+           if self.name == "Inferno":
+                if selected_tower == "inferno":
+                    pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
+                else:
+                    pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
+           if self.name == "Tesla":
+                if selected_tower == "tesla":
                     pygame.draw.rect(screen, (68, 68, 68), self.shop_button, 0)
                 else:
                     pygame.draw.rect(screen, (0, 0, 0), self.shop_button, 0)
@@ -285,6 +313,8 @@ class Tower:
         self.upgrade_button1 = pygame.Rect(self.tower_shoting_range.centerx +50, self.tower_shoting_range.centery - 25, 100, 50)
         self.upgrade_button2 = pygame.Rect(self.tower_shoting_range.centerx -150, self.tower_shoting_range.centery - 25, 100, 50)
         self.slowAmount = 0.8
+        self.laser_width = 2
+        self.infernoincrease = 0.1
             
 
     def is_mouse_over(self):
@@ -292,16 +322,21 @@ class Tower:
         if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and placement == False and number_selected_towers == 0:
             move_tower = livingTowers.pop(livingTowers.index(self))
             livingTowers.append(move_tower)
+            selected_towers.append(self)
             self.selected = True
             number_selected_towers += 1
         
         elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button1.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button2.collidepoint(pygame.mouse.get_pos()) and self.selected == True and number_selected_towers == 1:
             self.color = 100
             self.selected = False
+            if self in selected_towers: selected_towers.remove(self)
             number_selected_towers -= 1
-        print(number_selected_towers)  
+        if self.selected == True and pygame.key.get_pressed()[pygame.K_d] == 1:
+            selected_towers.remove(self)
+            number_selected_towers -= 1
 
     def shoot(self):
+        print(number_selected_towers)
         for self.enemy in self.target_enemys:
             if self.enemy.figur.colliderect(self.tower_shoting_range) and self.enemy.health > 0:
                 x = self.enemy.figur.centerx - self.tower_rect.centerx
@@ -320,12 +355,22 @@ class Tower:
                         if self.radius >= self.tower_shoting_range.width / 2:
                             self.radius = 0
                             self.cooldown = self.fire_rate
-
+                    if self.name == "inferno":
+                        pygame.draw.line(screen, (255, 255, 0), self.rect.center, self.enemy.figur.center, int(self.laser_width))
+                        self.damage += self.infernoincrease
+                        self.cooldown = self.fire_rate
+                        self.laser_width += self.infernoincrease
+                    if self.name == "tesla":
+                        pygame.draw.line(screen, (10, 10, 255), self.rect.center, self.enemy.figur.center, 2)
+                        self.cooldown = self.fire_rate
                     self.enemy.GetDammage(self.damage)
                 else:
                     self.cooldown -= 1
             else:
                 self.targets_number -= 1
+                if self.name == "inferno":
+                    self.damage = 0.1
+                    self.laser_width = 2
                 if self.enemy in self.target_enemys: self.target_enemys.remove(self.enemy)
     def draw(self):
         self.tower_shoting_range = pygame.Rect(self.x_pos - self.range/2, self.y_pos - self.range/2, self.range, self.range)
@@ -340,13 +385,17 @@ class Tower:
             pygame.draw.rect(screen, (50, 100, 50), self.tower_rect, 0)
         if self.name == "slower":
             pygame.draw.rect(screen, (50, 50, 100), self.tower_rect, 0)
+        if self.name == "inferno":
+            pygame.draw.rect(screen, (100, 100, 100), self.tower_rect, 0)
+        if self.name == "tesla":
+            pygame.draw.rect(screen, (200, 100, 100), self.tower_rect, 0)
         if self.selected == True and pygame.key.get_pressed()[pygame.K_d] == 1:
             if self in livingTowers: livingTowers.remove(self)
 
     def upgrade(self):
         global total_gold
         global mouse_clicked
-        if self.selected == True:
+        if self in selected_towers:
             self.smallfont = pygame.font.SysFont('Corbel',15) 
             text1 = self.smallfont.render('Upgrade' , True , (255,255,255)) 
             text2 = self.smallfont.render('Upgrade2' , True , (255,255,255))
@@ -360,6 +409,10 @@ class Tower:
                         self.damage += 1
                     if self.name == "slower":
                         self.fire_rate -= 1
+                    if self.name == "inferno":
+                        self.range += 10
+                    if self.name == "tesla":
+                        self.max_targets += 1
                     total_gold -= 100
                     mouse_clicked = True
                 if pygame.mouse.get_pressed()[0] == 0 and mouse_clicked == True:
@@ -375,6 +428,10 @@ class Tower:
                         self.fire_rate += 10
                     if self.name == "slower":
                         self.slowAmount -= 0.1
+                    if self.name == "inferno":
+                        self.infernoincrease += 0.1
+                    if self.name == "tesla":
+                        self.damage += 0.05
                     total_gold -= 150
                     mouse_clicked = True
                 if pygame.mouse.get_pressed()[0] == 0 and mouse_clicked == True:
@@ -386,7 +443,7 @@ class Tower:
 
             
     def spwan(self):
-        if self.name != "slower":
+        if self.name != "slower" and self.name != "tesla":
             if self.targets_number == 0:
                 screen.blit(self.new_image, self.rect)
             if self.targets_number == 1:
@@ -395,6 +452,7 @@ class Tower:
                 self.rect = self.new_image.get_rect()
                 self.rect.center = old_center
                 screen.blit(self.new_image, self.rect)
+                
     
     def detect(self):
         for self.enemy in livingEnemys:
@@ -449,6 +507,10 @@ class Game_funktions:
             self.placement_range_indicator = pygame.Surface((400, 400))
         if selected_tower == "slower":
             self.placement_range_indicator = pygame.Surface((250, 250))
+        if selected_tower == "inferno":
+            self.placement_range_indicator = pygame.Surface((300, 300))
+        if selected_tower == "tesla":
+            self.placement_range_indicator = pygame.Surface((300, 300))
             
         self.placement_range_indicator.set_alpha(127)
         self.placement_range_indicator.fill((0, 0, 0))
@@ -473,6 +535,8 @@ is_mouse_over_button = False
 is_mouse_over_archer = False
 is_mouse_over_canon = False
 is_mouse_over_slower = False
+is_mouse_over_inferno = False
+is_mouse_over_tesla = False
 shop_open = False    
 placement = False
 placement_valid = True
@@ -485,6 +549,7 @@ speed_button = pygame.Rect(10, 650, 50, 50)
 number_selected_towers = 0
 mouse_clicked = False
 game_state = "startMenu"
+selected_towers = []
 while True:
     screen.blit(background, (0,0))
     if game_state == "startMenu":
@@ -534,6 +599,8 @@ while True:
             is_mouse_over_archer = False
             is_mouse_over_canon = False
             is_mouse_over_slower = False
+            is_mouse_over_inferno = False
+            is_mouse_over_tesla = False
             shop_open = False    
             placement = False
             placement_valid = True
@@ -618,6 +685,12 @@ while True:
                     if selected_tower == "slower":
                         total_gold -= 125
                         slower = Tower(1, 0, 250, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
+                    if selected_tower == "inferno":
+                        total_gold -= 200
+                        inferno = Tower(1, 0.1, 300, 0, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "inferno")
+                    if selected_tower == "tesla":
+                        total_gold -= 175
+                        tesla = Tower(5, 0.1, 300, 0, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "tesla")
                 if event.button == 1 and is_mouse_over_archer == True:
                     selected_tower = "archer"
                     price_to_check = 100
@@ -629,6 +702,14 @@ while True:
                 if event.button == 1 and is_mouse_over_slower == True:
                     selected_tower = "slower"
                     price_to_check = 150
+                    checkprice = True
+                if event.button == 1 and is_mouse_over_inferno == True:
+                    selected_tower = "inferno"
+                    price_to_check = 200
+                    checkprice = True
+                if event.button == 1 and is_mouse_over_tesla == True:
+                    selected_tower = "tesla"
+                    price_to_check = 200
                     checkprice = True
                 if event.button == 1 and is_mouse_over_button == True and shop_open == True:
                     shop_open = False
@@ -654,7 +735,9 @@ while True:
             shop.draw()
             shop.draw_towers("Archer", "100", 1015, 255) 
             shop.draw_towers("Canon", "150", 1015, 255+80) 
-            shop.draw_towers("Slower", "100", 1015, 255+160) 
+            shop.draw_towers("Slower", "125", 1015, 255+160) 
+            shop.draw_towers("Inferno", "200", 1015, 255+240)
+            shop.draw_towers("Tesla", "175", 1015, 255+320)
         if cooldown > 0:
             cooldown -= 1
         if cooldown == 0:
