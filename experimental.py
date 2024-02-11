@@ -2,6 +2,8 @@ import pygame
 import math
 import sys
 import newenemy
+import databank
+from databank import Savegame
 from newenemy import Enemy
 
 pygame.font.init() 
@@ -288,12 +290,17 @@ class Tower:
             
 
     def is_mouse_over(self):
-        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and shop_open == False:
+        global number_selected
+        if self.tower_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] == 1 and placement == False and number_selected == 0:
+            move_tower = livingTowers.pop(livingTowers.index(self))
+            livingTowers.append(move_tower)
             self.selected = True
+            number_selected = 1
         
         elif pygame.mouse.get_pressed()[0] == 1 and not self.tower_rect.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button1.collidepoint(pygame.mouse.get_pos()) and not self.upgrade_button2.collidepoint(pygame.mouse.get_pos()):
             self.color = 100
             self.selected = False
+            number_selected = 0
             
 
     def shoot(self):
@@ -460,10 +467,34 @@ selected_tower = ""
 price_to_check = 0
 Tower_that_mouse_is_over = []
 speed_button = pygame.Rect(10, 650, 50, 50)
+number_selected = 0
+saved = False
+loaded = False
 
-game_state = "running"
+game_state = "startMenu"
 while True:
     screen.blit(background, (0,0))
+    if game_state == "startMenu":
+        smallfont = pygame.font.SysFont('Corbel',35) 
+        text = smallfont.render('Start' , True , (255,255,255)) 
+        start_button = pygame.Rect(1010, 660, 271, 50)
+        mouse = pygame.mouse.get_pos()
+        if start_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), start_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), start_button, 0)
+        screen.blit(text , (start_button.x + 60, start_button.y + 10))
+        if start_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            game_state = "running"
+        else:
+            is_mouse_over_button = False
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type ==pygame.QUIT: 
+                pygame.quit()
+                sys.exit()
+
+
     if game_state == "game over":
         smallfont = pygame.font.SysFont('Corbel',35) 
         text = smallfont.render('Restart' , True , (255,255,255)) 
@@ -484,7 +515,7 @@ while True:
             spawncounter = 0
             livingTowers = []
             total_gold = 1000
-            Player1=Player(1)
+            Player1=Player(100)
             shop = Shop()
             is_mouse_over_button = False
             is_mouse_over_archer = False
@@ -508,6 +539,62 @@ while True:
             if event.type ==pygame.QUIT: 
                 pygame.quit()
                 sys.exit()
+    if game_state == "paused":
+        smallfont = pygame.font.SysFont('Corbel',35) 
+        text = smallfont.render('Continue' , True , (255,255,255)) 
+        savetext = smallfont.render('Save' , True , (255,255,255))
+        loadtext = smallfont.render('Load' , True , (255,255,255))
+        continue_button = pygame.Rect(1010, 660, 271, 50)
+        save_button = pygame.Rect(1010, 600, 271, 50)
+        load_button = pygame.Rect(1010, 540, 271, 50)
+        mouse = pygame.mouse.get_pos()
+        if continue_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), continue_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), continue_button, 0)
+        screen.blit(text , (continue_button.x + 60, continue_button.y + 10))
+        if save_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), save_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), save_button, 0)
+        screen.blit(savetext , (save_button.x + 60, save_button.y + 10))
+        if load_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (155, 155, 155), load_button, 0)
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), load_button, 0)
+        screen.blit(loadtext , (load_button.x + 60, load_button.y + 10))
+        if continue_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            game_state = "running"
+            saved = False
+            loaded = False
+        elif save_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            if saved != True:
+                print("savegame")
+                Savegame(wave, total_gold, Player1.health)
+                databank.Savetowers(livingTowers)
+                saved = True
+        elif load_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            if loaded != True:
+                print("loading")
+                loaded = True
+                savedTowers = databank.LoadTowers()
+                livingTowers=[]
+                for towers in savedTowers:
+                    Tower(towers[0], towers[1], towers[2], towers[3], towers[4], towers[5], towers[6], towers[7])
+                saves = databank.Loadsave()
+                wave = saves[0]-1
+                livingEnemys = []
+                Wavelist = []
+                total_gold = saves[1]
+                Player1.health = saves[2]
+        else:
+            is_mouse_over_button = False
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type ==pygame.QUIT: 
+                pygame.quit()
+                sys.exit()
+    
     if game_state == "running":
         if spawncounter >= spawnsumme:
             if len(Wavelist)==0 and len(livingEnemys)==0:
@@ -530,6 +617,8 @@ while True:
                 pygame.quit()
                 sys.exit()#Spiel schließen
             if event.type ==pygame.QUIT: sys.exit()#Spiel schließen
+            if pygame.key.get_pressed()[pygame.K_ESCAPE] == 1:
+                game_state = "paused"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if speed_button.collidepoint(pygame.mouse.get_pos()) and event.button == 1:
                     if speedmode:
@@ -552,7 +641,6 @@ while True:
                     if selected_tower == "slower":
                         total_gold -= 125
                         slower = Tower(1, 0, 250, 20, 1, pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], "slower")
-                    placement = False
                 if event.button == 1 and is_mouse_over_archer == True:
                     selected_tower = "archer"
                     price_to_check = 100
