@@ -53,9 +53,8 @@ def draw():
 livingTowers = []  # darin werden lebende Türme gesichert
 
 angel = 90
-tower_aiming_indicator_org = pygame.Surface((40, 10))
-tower_aiming_indicator_org.set_colorkey((0, 0, 0))
-tower_aiming_indicator_org.fill((100, 160, 100))
+tower_aiming_indicator_org = pygame.image.load("images/archer2.png")
+tower_aiming_indicator_org = pygame.transform.rotate(tower_aiming_indicator_org, -90)
 tower_aiming_indicator = tower_aiming_indicator_org.copy()
 tower_aiming_indicator.set_colorkey((0, 0, 0))
 
@@ -297,31 +296,11 @@ class Shop:
         screen.blit(text , (self.shop_button.x + 85, self.shop_button.y + 20))
         screen.blit(price_text , (self.shop_button.x + 200, self.shop_button.y + 50))
         pygame.draw.circle(screen, (255, 223, 0),(self.shop_button.x + 240, self.shop_button.y + 60) , 8, width=0)
-        if self.name == "Archer":
-            self.archer_rect = pygame.Rect(x+10, y+10, 50, 50) 
-            pygame.draw.rect(screen, (100, 50, 50), self.archer_rect, 0)
-            tower_rohr_rect = pygame.Rect(self.archer_rect.centerx, self.archer_rect.centery - 5, 40, 10)
-            pygame.draw.rect(screen, (100, 160, 100), tower_rohr_rect, 0)
-        if self.name == "Canon":
-            self.canon_rect = pygame.Rect(x+10, y+10, 50, 50) 
-            pygame.draw.rect(screen, (50, 100, 50), self.canon_rect, 0)
-            tower_rohr_rect = pygame.Rect(self.canon_rect.centerx, self.canon_rect.centery - 5, 40, 10)
-            pygame.draw.rect(screen, (100, 160, 100), tower_rohr_rect, 0)
-        if self.name == "Slower":
-            self.slower_rect = pygame.Rect(x+10, y+10, 50, 50) 
-            pygame.draw.rect(screen, (50, 50, 100), self.slower_rect, 0)
-            ice_icon_shop = pygame.transform.scale(ice_icon, (30, 30))
-            screen.blit(ice_icon_shop, (self.slower_rect.x + 10, self.slower_rect.y + 10))
-        if self.name == "Inferno":
-            self.inferno_rect = pygame.Rect(x+10, y+10, 50, 50) 
-            pygame.draw.rect(screen, (100, 100, 100), self.inferno_rect, 0)
-            tower_rohr_rect = pygame.Rect(self.inferno_rect.centerx, self.inferno_rect.centery - 5, 40, 10)
-            pygame.draw.rect(screen, (100, 160, 100), tower_rohr_rect, 0)
-        if self.name == "Tesla":
-            self.tesla_rect = pygame.Rect(x+10, y+10, 50, 50) 
-            pygame.draw.rect(screen, (200, 100, 100), self.tesla_rect, 0)
-            tesla_icon_shop = pygame.transform.scale(blue_lightning_icon, (30, 30))
-            screen.blit(tesla_icon_shop, (self.tesla_rect.x + 10, self.tesla_rect.y + 10))
+        self.archer_rect = pygame.Rect(x+10, y+10, 50, 50) 
+        pygame.draw.rect(screen, (100, 50, 50), self.archer_rect, 0)
+        tower_rohr_rect = pygame.Rect(self.archer_rect.centerx, self.archer_rect.centery - 5, 40, 10)
+        pygame.draw.rect(screen, (100, 160, 100), tower_rohr_rect, 0)
+
         
 class Tower:
 
@@ -340,7 +319,7 @@ class Tower:
         livingTowers.append(self)
         self.rect = tower_aiming_indicator.get_rect()
         self.rect.center = (self.tower_rect.centerx, self.tower_rect.centery)
-        self.new_image = pygame.transform.rotate(tower_aiming_indicator, self.angle * -180 / math.pi)
+        self.new_image = pygame.transform.rotate(archer_graphic, self.angle * -180 / math.pi)
         self.cooldown = 0
         self.fire_rate = fire_rate
         self.damage = damage
@@ -427,14 +406,11 @@ class Tower:
 
     def draw(self):
         self.tower_shoting_range = pygame.Rect(self.x_pos - self.range/2, self.y_pos - self.range/2, self.range, self.range)
-        if self.name == "archer":
-            pygame.draw.rect(screen, (100, 50, 50), self.tower_rect, 0)
+        
         if self.name == "canon":
             pygame.draw.rect(screen, (50, 100, 50), self.tower_rect, 0)
         if self.name == "slower":
             pygame.draw.rect(screen, (50, 50, 100), self.tower_rect, 0)
-            ice_icon_tower = pygame.transform.scale(ice_icon, (30, 30))
-            screen.blit(ice_icon_tower, (self.tower_rect.x + 10, self.tower_rect.y + 10))
         if self.name == "inferno":
             pygame.draw.rect(screen, (100, 100, 100), self.tower_rect, 0)
         if self.name == "tesla":
@@ -623,9 +599,7 @@ class Tower:
                 self.rect = self.new_image.get_rect()
                 self.rect.center = old_center
                 screen.blit(self.new_image, self.rect)
-        if self.name == "tesla":
-            tesla_icon = pygame.transform.scale(blue_lightning_icon, (30, 30))
-            screen.blit(tesla_icon, (self.tower_rect.x + 10, self.tower_rect.y + 10))
+                
     
     def detect(self):
         for self.enemy in livingEnemys:
@@ -757,7 +731,7 @@ ice_icon = pygame.image.load('images\ice_icon.png').convert_alpha()
 inferno_icon = pygame.image.load('images\laser-icon.png').convert_alpha()
 number_targets_icon = pygame.image.load('images/number_targets_icon.png').convert_alpha()
 arrow_up_icon = pygame.image.load('images/arrow_up.png').convert_alpha()
-blue_lightning_icon = pygame.image.load('images\Blue-Lightning.png').convert_alpha()
+archer_graphic = pygame.image.load('images/archer2.png').convert_alpha()
 firerate_icon = pygame.transform.scale(firerate_icon, (20, 20))
 while True:
     screen.blit(background, (0,0))
