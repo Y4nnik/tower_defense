@@ -4,7 +4,6 @@ import sys
 import newenemy
 from newenemy import Enemy
 import random
-
 pygame.font.init() 
 wave = 0 #Wellencounter
 Wavelist = []
@@ -34,7 +33,9 @@ def draw():
     text_wave = my_font.render(wavetext, False, (0, 0 ,0))
     text_surface_gold = my_font.render(str(total_gold), False, (0, 0, 0))
     screen.blit(text_surface_gold, (120,5))
-    pygame.draw.circle(screen, (255, 223, 0),(210,28), 15, width=0)
+    if total_gold >= 10000: pygame.draw.circle(screen, (255, 223, 0),(230,28), 15, width=0)
+    else: pygame.draw.circle(screen, (255, 223, 0),(210,28), 15, width=0)
+    if total_gold >= 100000: pygame.draw.circle(screen, (255, 223, 0),(250,28), 15, width=0)
     screen.blit(text_health, (10,5))
     screen.blit(text_wave, (260,5))
     screen.blit(text_remainingenemys, (770, 5))
@@ -445,7 +446,6 @@ class Tower:
             if self.name == "archer":
                 firerate_icon_rect = pygame.Rect(self.tower_rect.x + 70, self.tower_rect.y + 60, 20, 20)
                 global firerate_icon
-                firerate_icon = pygame.transform.scale(firerate_icon, (20, 20))
                 screen.blit(firerate_icon, firerate_icon_rect)
                 firerate_text = self.smallfont.render(str(self.fire_rate), True, (255, 255, 255))
                 screen.blit(firerate_text, (firerate_icon_rect.x + 30, firerate_icon_rect.y-2))
@@ -653,6 +653,17 @@ class Game_funktions:
             placement_valid = False
         else:
             placement_valid = True
+        wayline1 = pygame.draw.line(screen, (64, 63, 63), (675, 0), (675, 226), 70)
+        wayline2 = pygame.draw.line(screen, (64, 63, 63), (710, 225), (405, 225), 70)
+        wayline3 = pygame.draw.line(screen, (64, 63, 63), (405, 260), (405, 107), 70)
+        wayline4 = pygame.draw.line(screen, (64, 63, 63), (440, 108), (188, 108), 70)
+        wayline5 = pygame.draw.line(screen, (64, 63, 63), (189, 74), (189, 492), 70)
+        wayline6 = pygame.draw.line(screen, (64, 63, 63), (155, 490), (969, 490), 70)
+        wayline7 = pygame.draw.line(screen, (64, 63, 63), (968, 525), (968, 204), 70)
+        wayline8 = pygame.draw.line(screen, (64, 63, 63), (933, 205), (1290, 205), 70)
+        
+        
+        
         for tower in livingTowers:
             if tower.tower_rect.colliderect(self.placement_indicator_rect):
                 placement_valid = False 
@@ -680,6 +691,8 @@ class Game_funktions:
         screen.blit(self.placement_range_indicator, (pygame.mouse.get_pos()[0] - height/2, pygame.mouse.get_pos()[1] - width/2))               
         self.placement_indicator = pygame.Surface((50, 50))
         self.placement_indicator.set_alpha(127)
+        if wayline1.colliderect(self.placement_indicator_rect) or wayline2.colliderect(self.placement_indicator_rect) or wayline3.colliderect(self.placement_indicator_rect) or wayline4.colliderect(self.placement_indicator_rect) or wayline5.colliderect(self.placement_indicator_rect) or wayline6.colliderect(self.placement_indicator_rect) or wayline7.colliderect(self.placement_indicator_rect) or wayline8.colliderect(self.placement_indicator_rect):
+            placement_valid = False
         if placement_valid == True:
             self.placement_indicator.fill((0, 255, 0))
         else:
@@ -720,18 +733,24 @@ ice_icon = pygame.image.load('images\ice_icon.png').convert_alpha()
 inferno_icon = pygame.image.load('images\laser-icon.png').convert_alpha()
 number_targets_icon = pygame.image.load('images/number_targets_icon.png').convert_alpha()
 arrow_up_icon = pygame.image.load('images/arrow_up.png').convert_alpha()
+firerate_icon = pygame.transform.scale(firerate_icon, (20, 20))
 while True:
     screen.blit(background, (0,0))
     if game_state == "startMenu":
-        smallfont = pygame.font.SysFont('Corbel',35) 
+        start_menu = pygame.Rect(1290/2 - 250, 50, 500, 600)
+        pygame.draw.rect(screen, (30, 30, 30), start_menu, 0)
+        title_font = pygame.font.SysFont('Corbel',80)
+        title = title_font.render('Star Defense' , True , (255,255,255))
+        screen.blit(title , (1290/2 - 250 + 50, 100))
+        smallfont = pygame.font.SysFont('Corbel',50) 
         text = smallfont.render('Start' , True , (255,255,255)) 
-        start_button = pygame.Rect(1010, 660, 271, 50)
+        start_button = pygame.Rect(1290/2 - 250 + 100, 300, 300, 75)
         mouse = pygame.mouse.get_pos()
         if start_button.collidepoint(mouse):
-            pygame.draw.rect(screen, (155, 155, 155), start_button, 0)
+            pygame.draw.rect(screen, (112, 169, 171), start_button, 0)
         else:
-            pygame.draw.rect(screen, (0, 0, 0), start_button, 0)
-        screen.blit(text , (start_button.x + 60, start_button.y + 10))
+            pygame.draw.rect(screen, (55, 55, 55), start_button, 0)
+        screen.blit(text , (start_button.x + 100, start_button.y + 15))
         if start_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
             game_state = "running"
         else:
@@ -744,15 +763,27 @@ while True:
 
 
     if game_state == "game over":
-        smallfont = pygame.font.SysFont('Corbel',35) 
+        start_menu = pygame.Rect(1290/2 - 250, 50, 500, 600)
+        pygame.draw.rect(screen, (30, 30, 30), start_menu, 0)
+        title_font = pygame.font.SysFont('Corbel',80)
+        title = title_font.render('Game Over' , True , (255,255,255))
+        screen.blit(title , (1290/2 - 240 + 50, 100))
+        smallfont = pygame.font.SysFont('Corbel',50) 
         text = smallfont.render('Restart' , True , (255,255,255)) 
-        restart_button = pygame.Rect(1010, 660, 271, 50)
+        restart_button = pygame.Rect(1290/2 - 250 + 100, 350, 300, 75)
         mouse = pygame.mouse.get_pos()
         if restart_button.collidepoint(mouse):
-            pygame.draw.rect(screen, (155, 155, 155), restart_button, 0)
+            pygame.draw.rect(screen, (112, 169, 171), restart_button, 0)
         else:
-            pygame.draw.rect(screen, (0, 0, 0), restart_button, 0)
-        screen.blit(text , (restart_button.x + 60, restart_button.y + 10))
+            pygame.draw.rect(screen, (55, 55, 55), restart_button, 0)
+        wave_text = smallfont.render('Wave: ' + str(wave) , True , (255,255,255))
+        screen.blit(wave_text , (restart_button.x + 80, restart_button.y - 150))
+        screen.blit(text , (restart_button.x + 80, restart_button.y + 15))
+
+        if restart_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            game_state = "running"
+        else:
+            is_mouse_over_button = False
         if restart_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
             game_state = "running"
             wave = 0
@@ -792,16 +823,21 @@ while True:
                 pygame.quit()
                 sys.exit()
     if game_state == "paused":
-        smallfont = pygame.font.SysFont('Corbel',35) 
+        start_menu = pygame.Rect(1290/2 - 250, 50, 500, 600)
+        pygame.draw.rect(screen, (30, 30, 30), start_menu, 0)
+        title_font = pygame.font.SysFont('Corbel',80)
+        title = title_font.render('Pause' , True , (255,255,255))
+        screen.blit(title , (1290/2- 100, 100))
+        smallfont = pygame.font.SysFont('Corbel',50) 
         text = smallfont.render('Continue' , True , (255,255,255)) 
-        continue_button = pygame.Rect(1010, 660, 271, 50)
+        start_button = pygame.Rect(1290/2 - 250 + 100, 300, 300, 75)
         mouse = pygame.mouse.get_pos()
-        if continue_button.collidepoint(mouse):
-            pygame.draw.rect(screen, (155, 155, 155), continue_button, 0)
+        if start_button.collidepoint(mouse):
+            pygame.draw.rect(screen, (112, 169, 171), start_button, 0)
         else:
-            pygame.draw.rect(screen, (0, 0, 0), continue_button, 0)
-        screen.blit(text , (continue_button.x + 60, continue_button.y + 10))
-        if continue_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
+            pygame.draw.rect(screen, (55, 55, 55), start_button, 0)
+        screen.blit(text , (start_button.x + 55, start_button.y + 15))
+        if start_button.collidepoint(mouse) and pygame.mouse.get_pressed()[0] == 1:
             game_state = "running"
         else:
             is_mouse_over_button = False
@@ -889,6 +925,8 @@ while True:
 
 
 
+        if placement == True:
+            game.placement_funktion()
         for Enemys in livingEnemys:
             Enemys.Move()
             Enemys.DrawEnemy()
@@ -904,8 +942,6 @@ while True:
             Enemys.melt()
         if checkprice == True:
             game.check_price(price_to_check)
-        if placement == True:
-            game.placement_funktion()
         if shop_open == True:
             shop.draw()
             shop.draw_towers("Archer", "100", 1015, 255) 
