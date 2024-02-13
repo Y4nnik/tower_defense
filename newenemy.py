@@ -23,6 +23,10 @@ starship = pygame.image.load("images/starship.png")
 starship = pygame.transform.rotate(starship, 180)
 destroyer = pygame.image.load("images/destroyer.png")
 destroyer = pygame.transform.rotate(destroyer, 180)
+endboss = pygame.image.load("images/endboss.png")
+endboss = pygame.transform.rotate(endboss, 180)
+bigboss = pygame.image.load("images/bigboss.png")
+bigboss = pygame.transform.rotate(bigboss, 180)
 
 vector = pygame.math.Vector2
 EnemyCollection = []
@@ -47,16 +51,19 @@ class Enemy:
 Enemy(6,10,10,1,1,1,shipsmall4)
 Enemy(8,10,10,8,8,10,shipsmall5)
 Enemy(5,10,10,10,10,10,shipsmall)
+Enemy(6,10,10,1,1,1, smallestship)
+Enemy(8,15,15,8,8,8, shipsmall6)
+Enemy(5,10,10,10,10,10, shipsmall2)    
+Enemy(5,11,11,20,15,15, shipsmall8)    
+Enemy(5,12,12,30,30,20, shipsmall3)
+Enemy(5,10,10,20,60,30, smallestship)
+Enemy(3,30,30,200,100,80, starship)
+Enemy(3,40,40,800,200,100, cruiser)
+Enemy(5,50,50,1600,20,150, destroyer)
+Enemy(5,60,91,32000,20,400, endboss)
+Enemy(8,80,100,640000,99,2000, bigboss)
 def newWave(wave):
-    Enemy(6,10,10,1,1,1, smallestship)
-    Enemy(8,15,15,8,8,8, shipsmall6)
-    Enemy(5,10,10,10,10,10, shipsmall2)    
-    Enemy(5,11,11,20,15,15, shipsmall8)    
-    Enemy(5,12,12,30,30,20, shipsmall3)
-    Enemy(5,10,10,20,60,30, smallestship)
-    Enemy(3,30,30,200,100,80, starship)
-    Enemy(3,40,40,800,200,100, cruiser)
-    Enemy(5,50,50,1600,20,150, destroyer)
+
     avaylableEnemys = EnemyCollection
     if wave <=10:
         value=Values[wave-1]
