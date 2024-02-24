@@ -749,15 +749,15 @@ mouse_clicked = False
 game_state = "startMenu"
 selected_towers = []
 melting_enemys = []
-damage_icon = pygame.image.load('images\Icon_damage.webp').convert_alpha()
+damage_icon = pygame.image.load('images/Icon_damage.webp').convert_alpha()   
 range_icon = pygame.image.load('images/range_icon.png').convert_alpha()
 firerate_icon = pygame.image.load('images/firerate_icon.svg').convert_alpha()
-crit_icon = pygame.image.load('images\Icon_critical_damage.webp').convert_alpha()
-ice_icon = pygame.image.load('images\ice_icon.png').convert_alpha()
-inferno_icon = pygame.image.load('images\laser-icon.png').convert_alpha()
+crit_icon = pygame.image.load('images/Icon_critical_damage.webp').convert_alpha()
+ice_icon = pygame.image.load('images/ice_icon.png').convert_alpha()
+inferno_icon = pygame.image.load('images/laser-icon.png').convert_alpha()
 number_targets_icon = pygame.image.load('images/number_targets_icon.png').convert_alpha()
 arrow_up_icon = pygame.image.load('images/arrow_up.png').convert_alpha()
-blue_lightning_icon = pygame.image.load('images\Blue-Lightning.png').convert_alpha()
+blue_lightning_icon = pygame.image.load('images/Blue-Lightning.png').convert_alpha()
 firerate_icon = pygame.transform.scale(firerate_icon, (20, 20))
 while True:
     screen.blit(background, (0,0))
