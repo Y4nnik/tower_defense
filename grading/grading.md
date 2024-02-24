@@ -10,12 +10,12 @@ Alle Kriterien betreffen nur die Projektarbeit. Beweismaterial kommt aus dem Gru
 # Die Studierenden kennen die Grundelemente der prozeduralen Programmierung. (10)
 <!-- Siehe Kenntnisse in prozeduraler Programmierung: zutreffendes wählen und beweisen-->
 # - Algorithmenbeschreibung
-    (https://github.com/Y4nnik/tower_defense/blob/03d695fe57b860809f7a5e19f6bafb7830caccfc/merging.py#L630-L634)
-    Name des Algorithmus: Gegner Erkennung der Türme
-    Problem welches gelöst wird: Die Türme müssen die Gegner erkennen , welche in ihre Schussreichweite kommen, damit diese von ihnen Angegriffen werden können.
-    Beschreibung der Lösung: Es wird für jeden Lebenenen Geegner geprüft, ob dieser sich in der Schussreichweite des Turms befindet, da die Türme jeweils nur eine Gewisse Anzahl an Feinen gleichzeitig angreifen sollen (max_targets) wird zusätzlich geprüft ob die Türme überhaupt noch weitere Gegner angreifen können (targets_number) und um zu verhindern, dass Gegner mehrmals angegriffen werden, wird noch überprüft, ob sie sich bereits in der Liste der "anvisierten" Gegner befinden (target_enemys). Sollten diese ganzen Voraussetzungen erfüllt sein wird der Gegner in die Liste der "anvisierten" Gegner hinzugefügt und die Anzahl der Gegner die der Turm gerade angreift (targets_number) um eins erhöht.
+(https://github.com/Y4nnik/tower_defense/blob/03d695fe57b860809f7a5e19f6bafb7830caccfc/merging.py#L630-L634)
+Name des Algorithmus: Gegner Erkennung der Türme
+Problem welches gelöst wird: Die Türme müssen die Gegner erkennen , welche in ihre Schussreichweite kommen, damit diese von ihnen Angegriffen werden können.
+Beschreibung der Lösung: Es wird für jeden Lebenenen Geegner geprüft, ob dieser sich in der Schussreichweite des Turms befindet, da die Türme jeweils nur eine Gewisse Anzahl an Feinen gleichzeitig angreifen sollen (max_targets) wird zusätzlich geprüft ob die Türme überhaupt noch weitere Gegner angreifen können (targets_number) und um zu verhindern, dass Gegner mehrmals angegriffen werden, wird noch überprüft, ob sie sich bereits in der Liste der "anvisierten" Gegner befinden (target_enemys). Sollten diese ganzen Voraussetzungen erfüllt sein wird der Gegner in die Liste der "anvisierten" Gegner hinzugefügt und die Anzahl der Gegner die der Turm gerade angreift (targets_number) um eins erhöht.
 
-    Zum Verständniss: Gegner die sich in target_enemys befinden, werden in einer anderen Funktion dann angegriffen und nehmen Schaden dieser Algorithmus dient ledeglich zur Erkennung dieser Gegner.
+Zum Verständniss: Gegner die sich in target_enemys befinden, werden in einer anderen Funktion dann angegriffen und nehmen Schaden dieser Algorithmus dient ledeglich zur Erkennung dieser Gegner.
 
 # - Datentypen
     https://github.com/Y4nnik/tower_defense/blob/main/merging.py#L30
