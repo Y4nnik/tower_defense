@@ -28,6 +28,9 @@ Mit einem Klick auf einen Turm wählt man ihn aus, dafür darf man aber nicht im
 Wenn die Gegner das Ende erreichen, verursachen sie Schaden an deinen Leben, sollten diese auf 0 fallen, verliert man und muss vom neuen Anfangen.
 
 Steuerung:
+
 Esc - Pausenmenu
+
 D (wenn ein Turm ausgewählt ist) - entfernt den ausgewählten Turm
+
 Rechtsklick - beendet Baumodus
