@@ -66,7 +66,7 @@ total_gold = 1000
 class Player:
     def __init__(self, Health):
         self.health = Health
-    def GetDammage(self, damageTaken):
+    def GetDamage(self, damageTaken):
         self.health -= damageTaken
         if self.health <= 0: 
             global game_state
@@ -74,11 +74,11 @@ class Player:
 
 
 class Enemy:
-    def __init__(self, speed, width, height, health, dammage, value, image):
+    def __init__(self, speed, width, height, health, damage, value, image):
         self.position = (676 - width / 2, 0 - height / 2)
         self.vector = vector(0, speed)
         self.width = width
-        self.dammage=dammage
+        self.damage=damage
         self.pause=0
         self.basehealth = health
         self.height = height
@@ -101,7 +101,7 @@ class Enemy:
                                       (676 - (self.width / 2), 0 - (self.height / 2), self.width, self.height))
 
 
-    def GetDammage(self, damageTaken):
+    def GetDamage(self, damageTaken):
         self.health -= damageTaken
         if self.health <= 0 and self.pause == 0: 
             if self in livingEnemys: livingEnemys.remove(self)
@@ -121,7 +121,7 @@ class Enemy:
             self.howMuchSlowed = 0
             self.meltcountdwon = 0
     def doDamage(self):
-        Player1.GetDammage(self.dammage)
+        Player1.GetDamage(self.damage)
 
     def DrawEnemy(self):
         screen.blit(self.image, (self.position[0], self.position[1]))
@@ -179,7 +179,7 @@ class Enemy:
         if self.figur.colliderect(Finish):
             global killed
             killed = 5
-            Player1.GetDammage(self.dammage)
+            Player1.GetDamage(self.damage)
             if self in livingEnemys: livingEnemys.remove(self)
 
 
@@ -389,10 +389,10 @@ class Tower:
                     if self.name == "canon":
                         crit_desicion = random.randint(1, 100)
                         if crit_desicion <= self.crit_chance:
-                            self.enemy.GetDammage(self.damage * 2)
+                            self.enemy.GetDamage(self.damage * 2)
                             pygame.draw.line(screen, (255, 0, 0), self.rect.center, self.enemy.figur.center, 6)
                         else:
-                            self.enemy.GetDammage(self.damage)
+                            self.enemy.GetDamage(self.damage)
                             pygame.draw.line(screen, (0, 255, 0), self.rect.center, self.enemy.figur.center, 6)
                         self.cooldown = self.fire_rate
                     if self.name == "slower":
@@ -412,7 +412,7 @@ class Tower:
                         pygame.draw.line(screen, (10, 10, 255), self.rect.center, self.enemy.figur.center, 2)
                         self.cooldown = self.fire_rate
                     if self.name != "canon":
-                        self.enemy.GetDammage(self.damage)
+                        self.enemy.GetDamage(self.damage)
                 else:
                     self.cooldown -= 1
             else:
@@ -881,7 +881,7 @@ while True:
                 savelist = []
                 savelist = newenemy.newWave(wave)
                 for enemys in savelist:
-                    Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.dammage, enemys.value, enemys.picture))
+                    Wavelist.append(Enemy(enemys.speed, enemys.width, enemys.height, enemys.health, enemys.damage, enemys.value, enemys.picture))
                 
             if len(Wavelist)>0:
                 livingEnemys.append(Wavelist[0])

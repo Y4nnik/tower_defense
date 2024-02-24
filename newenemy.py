@@ -36,11 +36,11 @@ def newEnemy(speed, width, height, health, damage, value, picture):
 Values = [0,0,0,0,0,100,120,150,170,250]
 
 class Enemy:
-    def __init__(self, speed, width, height, health, dammage, value, picture):
+    def __init__(self, speed, width, height, health, damage, value, picture):
         self.position = (676 - width / 2, 0 - height / 2)
         self.vector = vector(0, speed)
         self.width = width
-        self.dammage=dammage
+        self.damage=damage
         self.height = height
         self.health = health
         self.value = value
