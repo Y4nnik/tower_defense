@@ -79,13 +79,16 @@ Hier ein Beispiel anhand unseres Datentyps "Enemy" welcher als Attribute postion
 
 # Die Studierenden können ihre Software erläutern und begründen. (5)
 <!-- Jeder in der Gruppe: You have helped someone else and taught something to a fellow student (get a support message from one person) -->
+-hauptsächlich mündlicher Austausch mit Marvin von beiden (Gesichtserkennung)
+-![alt text](image-6.png)
 
 # Sie können existierenden Code analysieren und beurteilen. (5)
-<!-- Pro Gruppe:You have critiqued another group project. Link to your critique here (another wiki page on your git) and link the project in the critique, use these evaluation criteria to critique the other project. Make sure they get a top grade after making the suggested changes -->
+<!-- Pro Gruppe:You have critiqued another group project. Link to your critique here (another wiki page on your git) and link the project in the critique, use these evaluation criteria to critique the other project. Make sure they get a top grade after making the suggested changes -->https://github.com/Y4nnik/tower_defense/blob/main/grading/grading_chatbot.md
 
 # Sie können sich selbstständig in Entwicklungsumgebungen und Technologien einarbeiten und diese zur Programmierung und Fehlerbehebung einsetzen. (10)
 <!-- Which technology did you learn outside of the teacher given input -->pygame, https://github.com/Y4nnik/tower_defense/blob/03d695fe57b860809f7a5e19f6bafb7830caccfc/merging.py#L1
 <!-- Did you or your group get help from someone in the classroom (get a support message here from the person who helped you) -->
+![alt text](image-7.png)
 
 
 
