@@ -81,6 +81,7 @@ Hier ein Beispiel anhand unseres Datentyps "Enemy" welcher als Attribute postion
 <!-- Jeder in der Gruppe: You have helped someone else and taught something to a fellow student (get a support message from one person) -->
 -hauptsächlich mündlicher Austausch mit Marvin von beiden (Gesichtserkennung)
 -![alt text](image-6.png)
+-![alt text](image-8.png)
 
 # Sie können existierenden Code analysieren und beurteilen. (5)
 <!-- Pro Gruppe:You have critiqued another group project. Link to your critique here (another wiki page on your git) and link the project in the critique, use these evaluation criteria to critique the other project. Make sure they get a top grade after making the suggested changes -->https://github.com/Y4nnik/tower_defense/blob/main/grading/grading_chatbot.md
